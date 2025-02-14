@@ -61,14 +61,14 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(584, 407);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(432, 403);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
 			// label1
 			// 
 			this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(222, 33);
+			this.label1.Location = new System.Drawing.Point(146, 33);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(140, 27);
 			this.label1.TabIndex = 0;
@@ -79,7 +79,7 @@
 			this.LoginTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
 			this.LoginTB.Location = new System.Drawing.Point(31, 73);
 			this.LoginTB.Name = "LoginTB";
-			this.LoginTB.Size = new System.Drawing.Size(522, 34);
+			this.LoginTB.Size = new System.Drawing.Size(370, 34);
 			this.LoginTB.TabIndex = 1;
 			this.LoginTB.TextChanged += new System.EventHandler(this.LoginTB_TextChanged);
 			// 
@@ -87,7 +87,7 @@
 			// 
 			this.GeneratePasswordB.Anchor = System.Windows.Forms.AnchorStyles.None;
 			this.GeneratePasswordB.AutoSize = true;
-			this.GeneratePasswordB.Location = new System.Drawing.Point(172, 131);
+			this.GeneratePasswordB.Location = new System.Drawing.Point(96, 131);
 			this.GeneratePasswordB.Name = "GeneratePasswordB";
 			this.GeneratePasswordB.Size = new System.Drawing.Size(240, 37);
 			this.GeneratePasswordB.TabIndex = 2;
@@ -104,7 +104,7 @@
 			this.GeneratedPTB.Name = "GeneratedPTB";
 			this.GeneratedPTB.Password = "";
 			this.GeneratedPTB.ReadOnly = false;
-			this.GeneratedPTB.Size = new System.Drawing.Size(520, 50);
+			this.GeneratedPTB.Size = new System.Drawing.Size(368, 50);
 			this.GeneratedPTB.TabIndex = 0;
 			this.GeneratedPTB.TabStop = false;
 			// 
@@ -117,7 +117,7 @@
 			this.ConfirmedPTB.Name = "ConfirmedPTB";
 			this.ConfirmedPTB.Password = "";
 			this.ConfirmedPTB.ReadOnly = false;
-			this.ConfirmedPTB.Size = new System.Drawing.Size(520, 50);
+			this.ConfirmedPTB.Size = new System.Drawing.Size(368, 50);
 			this.ConfirmedPTB.TabIndex = 3;
 			// 
 			// SubmitB
@@ -125,7 +125,7 @@
 			this.SubmitB.Anchor = System.Windows.Forms.AnchorStyles.None;
 			this.SubmitB.AutoSize = true;
 			this.SubmitB.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.SubmitB.Location = new System.Drawing.Point(165, 335);
+			this.SubmitB.Location = new System.Drawing.Point(89, 333);
 			this.SubmitB.Name = "SubmitB";
 			this.SubmitB.Size = new System.Drawing.Size(254, 37);
 			this.SubmitB.TabIndex = 4;
@@ -138,7 +138,7 @@
 			this.AcceptButton = this.SubmitB;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 27F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(584, 407);
+			this.ClientSize = new System.Drawing.Size(432, 403);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Font = new System.Drawing.Font("Arial Narrow", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;

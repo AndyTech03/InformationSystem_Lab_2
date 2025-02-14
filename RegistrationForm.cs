@@ -12,7 +12,8 @@ namespace InformationSystem_Lab_2
 {
 	public partial class RegistrationForm : Form
 	{
-		public event Action<string, string> UserRegistration;
+		public event Action<string> SuccessfulRegistration;
+		private FileDataSet _fileDataSet;
 		private PasswordGeneratorForm GeneratorForm;
 		public RegistrationForm()
 		{
@@ -20,6 +21,7 @@ namespace InformationSystem_Lab_2
 			GeneratorForm = new PasswordGeneratorForm();
 			GeneratorForm.GeneratedPasswordAccepted += GeneratorForm_GeneratedPasswordAccepted;
 			GeneratedPTB.ReadOnly = true;
+			_fileDataSet = new FileDataSet();
 		}
 
 		private void GeneratorForm_GeneratedPasswordAccepted(string password)
@@ -29,28 +31,50 @@ namespace InformationSystem_Lab_2
 
 		private void GeneratePasswordB_Click(object sender, EventArgs e)
 		{
-			if (LoginTB.Text.Length == 0)
+			string login = LoginTB.Text;
+			if (login.Trim().Length != login.Length)
+			{
+				MessageBox.Show("Логин не должен содержать пробелов!", "Заполните форму", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
+			if (login.Length == 0)
 			{
 				MessageBox.Show("Введите логин!", "Заполните форму", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
-			GeneratorForm.ShowGeneratePasswordDialog(LoginTB.Text);
+			GeneratorForm.ShowGeneratePasswordDialog(login);
 		}
 
 		private void SubmitB_Click(object sender, EventArgs e)
 		{
-			if (LoginTB.Text.Length == 0 || GeneratedPTB.Password.Length == 0)
+			string login = LoginTB.Text;
+			string password = GeneratedPTB.Password;
+			if (login.Length == 0 || password.Length == 0)
 			{
 				MessageBox.Show("Введите логин и сгенерируйте пароль!", "Заполните форму", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
-			if (GeneratedPTB.Password != ConfirmedPTB.Password)
+			if (password != ConfirmedPTB.Password)
 			{
 				ConfirmedPTB.Password = "";
 				MessageBox.Show("Пароли не совпадают!", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
-			UserRegistration?.Invoke(LoginTB.Text, GeneratedPTB.Password);
+
+			bool result = _fileDataSet.TryRegister(login, password);
+			if (result == false)
+			{
+				MessageBox.Show("Логин не подходит, укажите другой!", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
+
+			string uuid = _fileDataSet.Login(login, password);
+			if (uuid == null)
+			{
+				MessageBox.Show("Что то пошло не так...", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+			SuccessfulRegistration?.Invoke(uuid);
 		}
 
 		private void LoginTB_TextChanged(object sender, EventArgs e)
