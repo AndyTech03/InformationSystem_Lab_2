@@ -30,7 +30,7 @@ namespace InformationSystem_Lab_2
 		{
 			set
 			{
-				PasswordVisibility = false;
+				//PasswordVisibility = false;
 				PasswordTB.Text = value;
 			}
 			get
@@ -54,7 +54,7 @@ namespace InformationSystem_Lab_2
 		public PasswordTextBox()
 		{
 			InitializeComponent();
-			PasswordVisibility = false;
+			PasswordVisibility = true;
 		}
 
 		private void VisibilityB_MouseDown(object sender, MouseEventArgs e)

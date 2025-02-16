@@ -24,18 +24,36 @@ namespace InformationSystem_Lab_2
 		{
 			string login = LoginTB.Text;
 			string password = PasswordPTB.Password;
+			if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password)) 
+			{
+				MessageBox.Show("Введите логин и пароль!", "Заполните форму", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
+
 			bool result = _fileDataSet.VerifyPassword(login, password);
+			int maxLoginAttempts = int.Parse(_fileDataSet.GetConfig("MaxLoginAttempts"));
+			int loginAttempts = _fileDataSet.GetLoginAttempts(login);
+			
 			if (result == false)
 			{
-				int maxLoginAttempts = _fileDataSet.GetConfig("MaxLoginAttempts");
-				int loginAttempts = _fileDataSet.GetLoginAttempts(login);
-				if (loginAttempts >= maxLoginAttempts) 
+				if (loginAttempts == 0)
 				{
-					MessageBox.Show("Вы превысили число неудачных попыток авторизации!\nПопробуйте позже или свяжитесь с администратором.", "Временная блокировка аккаунта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					_fileDataSet.FirstLoginAttempt(login);
+				}
+				else
+				{
+					_fileDataSet.AddLoginAttempt(login);
+				}
+				loginAttempts++;
+				if (loginAttempts < maxLoginAttempts)
+				{
+					MessageBox.Show("Неверный логин и/или пароль!", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					return;
 				}
-				_fileDataSet.AddLoginAttempt(login);
-				MessageBox.Show("Неверный логин и/или пароль!", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			}
+			if (loginAttempts >= maxLoginAttempts) 
+			{
+				MessageBox.Show("Вы превысили лимит неудачных попыток авторизации!\nСвяжитесь с администратором и попробуйте позже.", "Временная блокировка аккаунта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
 
@@ -46,6 +64,8 @@ namespace InformationSystem_Lab_2
 				return;
 			}
 			SuccessfulLogin?.Invoke(uuid);
+			DialogResult = DialogResult.OK;
+			MessageBox.Show($"Добро пожаловать!");
 		}
 	}
 }

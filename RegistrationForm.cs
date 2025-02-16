@@ -75,6 +75,7 @@ namespace InformationSystem_Lab_2
 				return;
 			}
 			SuccessfulRegistration?.Invoke(uuid);
+			DialogResult = DialogResult.OK;
 		}
 
 		private void LoginTB_TextChanged(object sender, EventArgs e)

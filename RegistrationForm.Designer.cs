@@ -31,9 +31,9 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.label1 = new System.Windows.Forms.Label();
 			this.LoginTB = new System.Windows.Forms.TextBox();
-			this.GeneratePasswordB = new System.Windows.Forms.Button();
 			this.GeneratedPTB = new InformationSystem_Lab_2.PasswordTextBox();
 			this.ConfirmedPTB = new InformationSystem_Lab_2.PasswordTextBox();
+			this.GeneratePasswordB = new System.Windows.Forms.Button();
 			this.SubmitB = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
@@ -52,7 +52,7 @@
 			this.tableLayoutPanel1.Controls.Add(this.SubmitB, 1, 5);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 6;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
@@ -83,18 +83,6 @@
 			this.LoginTB.TabIndex = 1;
 			this.LoginTB.TextChanged += new System.EventHandler(this.LoginTB_TextChanged);
 			// 
-			// GeneratePasswordB
-			// 
-			this.GeneratePasswordB.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.GeneratePasswordB.AutoSize = true;
-			this.GeneratePasswordB.Location = new System.Drawing.Point(96, 131);
-			this.GeneratePasswordB.Name = "GeneratePasswordB";
-			this.GeneratePasswordB.Size = new System.Drawing.Size(240, 37);
-			this.GeneratePasswordB.TabIndex = 2;
-			this.GeneratePasswordB.Text = "Сгенерировать пароль";
-			this.GeneratePasswordB.UseVisualStyleBackColor = true;
-			this.GeneratePasswordB.Click += new System.EventHandler(this.GeneratePasswordB_Click);
-			// 
 			// GeneratedPTB
 			// 
 			this.GeneratedPTB.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -120,11 +108,22 @@
 			this.ConfirmedPTB.Size = new System.Drawing.Size(368, 50);
 			this.ConfirmedPTB.TabIndex = 3;
 			// 
+			// GeneratePasswordB
+			// 
+			this.GeneratePasswordB.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.GeneratePasswordB.AutoSize = true;
+			this.GeneratePasswordB.Location = new System.Drawing.Point(96, 131);
+			this.GeneratePasswordB.Name = "GeneratePasswordB";
+			this.GeneratePasswordB.Size = new System.Drawing.Size(240, 37);
+			this.GeneratePasswordB.TabIndex = 2;
+			this.GeneratePasswordB.Text = "Сгенерировать пароль";
+			this.GeneratePasswordB.UseVisualStyleBackColor = true;
+			this.GeneratePasswordB.Click += new System.EventHandler(this.GeneratePasswordB_Click);
+			// 
 			// SubmitB
 			// 
 			this.SubmitB.Anchor = System.Windows.Forms.AnchorStyles.None;
 			this.SubmitB.AutoSize = true;
-			this.SubmitB.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.SubmitB.Location = new System.Drawing.Point(89, 333);
 			this.SubmitB.Name = "SubmitB";
 			this.SubmitB.Size = new System.Drawing.Size(254, 37);
@@ -142,7 +141,7 @@
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Font = new System.Drawing.Font("Arial Narrow", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "RegistrationForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Регистрация";

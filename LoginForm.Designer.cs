@@ -32,8 +32,8 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.LoginTB = new System.Windows.Forms.TextBox();
 			this.PasswordPTB = new InformationSystem_Lab_2.PasswordTextBox();
-			this.SubmitB = new System.Windows.Forms.Button();
 			this.label2 = new System.Windows.Forms.Label();
+			this.SubmitB = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -91,19 +91,6 @@
 			this.PasswordPTB.Size = new System.Drawing.Size(368, 50);
 			this.PasswordPTB.TabIndex = 2;
 			// 
-			// SubmitB
-			// 
-			this.SubmitB.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.SubmitB.AutoSize = true;
-			this.SubmitB.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.SubmitB.Location = new System.Drawing.Point(166, 251);
-			this.SubmitB.Name = "SubmitB";
-			this.SubmitB.Size = new System.Drawing.Size(100, 40);
-			this.SubmitB.TabIndex = 3;
-			this.SubmitB.Text = "Войти";
-			this.SubmitB.UseVisualStyleBackColor = true;
-			this.SubmitB.Click += new System.EventHandler(this.SubmitB_Click);
-			// 
 			// label2
 			// 
 			this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -114,6 +101,18 @@
 			this.label2.TabIndex = 5;
 			this.label2.Text = "Введите пароль";
 			// 
+			// SubmitB
+			// 
+			this.SubmitB.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.SubmitB.AutoSize = true;
+			this.SubmitB.Location = new System.Drawing.Point(166, 251);
+			this.SubmitB.Name = "SubmitB";
+			this.SubmitB.Size = new System.Drawing.Size(100, 40);
+			this.SubmitB.TabIndex = 3;
+			this.SubmitB.Text = "Войти";
+			this.SubmitB.UseVisualStyleBackColor = true;
+			this.SubmitB.Click += new System.EventHandler(this.SubmitB_Click);
+			// 
 			// LoginForm
 			// 
 			this.AcceptButton = this.SubmitB;
@@ -123,7 +122,7 @@
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Font = new System.Drawing.Font("Times New Roman", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-			this.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+			this.Margin = new System.Windows.Forms.Padding(5);
 			this.Name = "LoginForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Вход";
