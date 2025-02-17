@@ -12,16 +12,16 @@ namespace InformationSystem_Lab_2
 {
 	public partial class RegistrationForm : Form
 	{
-		public event Action<string> SuccessfulRegistration;
+		public event Action<Guid> SuccessfulRegistration;
 		private FileDataSet _fileDataSet;
 		private PasswordGeneratorForm GeneratorForm;
-		public RegistrationForm()
+		public RegistrationForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
 			GeneratorForm = new PasswordGeneratorForm();
 			GeneratorForm.GeneratedPasswordAccepted += GeneratorForm_GeneratedPasswordAccepted;
 			GeneratedPTB.ReadOnly = true;
-			_fileDataSet = new FileDataSet();
+			_fileDataSet = fileDataSet;
 		}
 
 		private void GeneratorForm_GeneratedPasswordAccepted(string password)
@@ -68,8 +68,8 @@ namespace InformationSystem_Lab_2
 				return;
 			}
 
-			string uuid = _fileDataSet.Login(login, password);
-			if (uuid == null)
+			Guid uuid = _fileDataSet.Login(login, password);
+			if (uuid == Guid.Empty)
 			{
 				MessageBox.Show("Что то пошло не так...", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return;

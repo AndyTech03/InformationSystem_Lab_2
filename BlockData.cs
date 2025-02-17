@@ -6,38 +6,34 @@ using System.Threading.Tasks;
 
 namespace InformationSystem_Lab_2
 {
-	public class LoginAttemptsData : IFileData
+	public class BlockData : IFileData
 	{
 		public Guid uuid {  get; private set; }
-		public int attempts { get; private set; }
+		public string reason { get; private set; }
+		public DateTime blockedAt { get; private set; }
 
-		public LoginAttemptsData() { }
+		public BlockData() { }
 
-		public LoginAttemptsData(Guid uuid)
+		public BlockData(Guid uuid, string reason)
 		{
 			this.uuid = uuid;
-			this.attempts = 1;
+			this.reason = reason;
+			blockedAt = DateTime.Now;
 		}
 
 		public IFileData FromLine(string line)
 		{
 			string[] data = line.Split('\t');
-			return new LoginAttemptsData
-			{
+			return new BlockData {
 				uuid = Guid.Parse(data[0]),
-				attempts = int.Parse(data[1]),
+				reason = data[1],
+				blockedAt = DateTime.Parse(data[2]),
 			};
-		}
-
-		public LoginAttemptsData AddAttempt()
-		{
-			attempts++;
-			return this;
 		}
 
 		public string ToLine()
 		{
-			return $"{uuid}\t{attempts}";
+			return $"{uuid}\t{reason}\t{blockedAt}";
 		}
 	}
 }

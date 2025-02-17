@@ -9,7 +9,7 @@ namespace InformationSystem_Lab_2
 	public class UserData : IFileData
 	{
 
-		public string uuid { get; private set; }
+		public Guid uuid { get; private set; }
 		public string login { get; private set; }
 		public string password { get; private set; }
 
@@ -19,7 +19,7 @@ namespace InformationSystem_Lab_2
 
 		public UserData(string login, string password)
 		{
-			uuid = Guid.NewGuid().ToString();
+			uuid = Guid.NewGuid();
 			this.login = login;
 			this.password = password;
 		}
@@ -29,7 +29,7 @@ namespace InformationSystem_Lab_2
 			string[] data = line.Split('\t');
 			return new UserData
 			{
-				uuid = data[0],
+				uuid = Guid.Parse(data[0]),
 				login = data[1],
 				password = data[2],
 			};

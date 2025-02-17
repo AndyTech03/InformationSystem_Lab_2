@@ -22,7 +22,10 @@ namespace InformationSystem_Lab_2
 		public IFileData FromLine(string line)
 		{
 			string[] data = line.Split('\t');
-			return new ConfigData(data[0], data[1]);
+			return new ConfigData{
+				name = data[0], 
+				data = data[1],
+			};
 		}
 
 		public string ToLine()

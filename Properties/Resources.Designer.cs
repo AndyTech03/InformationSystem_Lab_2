@@ -79,5 +79,14 @@ namespace InformationSystem_Lab_2.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на process_watcher.py.
+        /// </summary>
+        internal static string watcher_script {
+            get {
+                return ResourceManager.GetString("watcher_script", resourceCulture);
+            }
+        }
     }
 }

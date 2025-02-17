@@ -14,11 +14,13 @@ namespace InformationSystem_Lab_2
 	{
 		private RegistrationForm _registrationForm;
 		private LoginForm _loginForm;
-		public MainForm()
+		private FileDataSet _fileDataSet;
+		public MainForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
-			_registrationForm = new RegistrationForm();
-			_loginForm = new LoginForm();
+			_fileDataSet = fileDataSet;
+			_registrationForm = new RegistrationForm(fileDataSet);
+			_loginForm = new LoginForm(fileDataSet);
 		}
 
 		private void MainForm_Shown(object sender, EventArgs e)

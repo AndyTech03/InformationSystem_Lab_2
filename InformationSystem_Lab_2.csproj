@@ -46,9 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockData.cs" />
     <Compile Include="ConfigData.cs" />
     <Compile Include="FileDataSet.cs" />
     <Compile Include="IFileData.cs" />
+    <Compile Include="EventLogData.cs" />
     <Compile Include="LoginAttemptsData.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
@@ -126,6 +128,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="process_watcher.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

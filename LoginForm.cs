@@ -12,12 +12,12 @@ namespace InformationSystem_Lab_2
 {
 	public partial class LoginForm : Form
 	{
-		public event Action<string> SuccessfulLogin;
+		public event Action<Guid> SuccessfulLogin;
 		private FileDataSet _fileDataSet;
-		public LoginForm()
+		public LoginForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
-			_fileDataSet = new FileDataSet();
+			_fileDataSet = fileDataSet;
 		}
 
 		private void SubmitB_Click(object sender, EventArgs e)
@@ -33,7 +33,8 @@ namespace InformationSystem_Lab_2
 			bool result = _fileDataSet.VerifyPassword(login, password);
 			int maxLoginAttempts = int.Parse(_fileDataSet.GetConfig("MaxLoginAttempts"));
 			int loginAttempts = _fileDataSet.GetLoginAttempts(login);
-			
+			bool blocked = _fileDataSet.GetLoginBlock(login);
+
 			if (result == false)
 			{
 				if (loginAttempts == 0)
@@ -45,7 +46,7 @@ namespace InformationSystem_Lab_2
 					_fileDataSet.AddLoginAttempt(login);
 				}
 				loginAttempts++;
-				if (loginAttempts < maxLoginAttempts)
+				if (loginAttempts < maxLoginAttempts && blocked == false)
 				{
 					MessageBox.Show("Неверный логин и/или пароль!", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					return;
@@ -53,12 +54,18 @@ namespace InformationSystem_Lab_2
 			}
 			if (loginAttempts >= maxLoginAttempts) 
 			{
+				_fileDataSet.BlockIfNot(login, "Превышен лимит попыток входа!");
 				MessageBox.Show("Вы превысили лимит неудачных попыток авторизации!\nСвяжитесь с администратором и попробуйте позже.", "Временная блокировка аккаунта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
+			if (blocked)
+			{
+				MessageBox.Show("Ваш аккаунт заблокирован!\nСвяжитесь с администратором и попробуйте позже.", "Временная блокировка аккаунта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
 
-			string uuid = _fileDataSet.Login(login, password);
-			if (uuid == null) 
+			Guid uuid = _fileDataSet.Login(login, password);
+			if (uuid == Guid.Empty) 
 			{
 				MessageBox.Show("Что то пошло не так...", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return;

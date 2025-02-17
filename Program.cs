@@ -14,9 +14,10 @@ namespace InformationSystem_Lab_2
 		[STAThread]
 		static void Main()
 		{
+			FileDataSet fileDataSet = new FileDataSet();
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			Application.Run(new MainForm(fileDataSet));
 		}
 	}
 }
