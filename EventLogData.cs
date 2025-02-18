@@ -15,6 +15,7 @@ namespace InformationSystem_Lab_2
 			ProgrammStop,
 			UserLogIn,
 			UserLogOut,
+			UserReLogIn,
 			LoginFailture,
 			ConfigChanged,
 			LogsArchived,

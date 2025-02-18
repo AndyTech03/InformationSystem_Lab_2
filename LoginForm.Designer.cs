@@ -65,9 +65,9 @@
 			// 
 			this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(139, 34);
+			this.label1.Location = new System.Drawing.Point(133, 34);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(153, 26);
+			this.label1.Size = new System.Drawing.Size(166, 26);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Введите логин";
 			// 
@@ -95,9 +95,9 @@
 			// 
 			this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(134, 154);
+			this.label2.Location = new System.Drawing.Point(125, 154);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(164, 26);
+			this.label2.Size = new System.Drawing.Size(181, 26);
 			this.label2.TabIndex = 5;
 			this.label2.Text = "Введите пароль";
 			// 
@@ -120,7 +120,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(432, 303);
 			this.Controls.Add(this.tableLayoutPanel1);
-			this.Font = new System.Drawing.Font("Times New Roman", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.Font = new System.Drawing.Font("Arial", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Margin = new System.Windows.Forms.Padding(5);
 			this.Name = "LoginForm";

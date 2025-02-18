@@ -12,12 +12,12 @@ namespace InformationSystem_Lab_2
 {
 	public partial class LoginForm : Form
 	{
-		public event Action<Guid> SuccessfulLogin;
-		private FileDataSet _fileDataSet;
+		public event Action<Guid, string> SuccessfulLogin;
+		private readonly FileDataSet DataSet;
 		public LoginForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
-			_fileDataSet = fileDataSet;
+			DataSet = fileDataSet;
 		}
 
 		private void SubmitB_Click(object sender, EventArgs e)
@@ -30,21 +30,17 @@ namespace InformationSystem_Lab_2
 				return;
 			}
 
-			bool result = _fileDataSet.VerifyPassword(login, password);
-			int maxLoginAttempts = int.Parse(_fileDataSet.GetConfig("MaxLoginAttempts"));
-			int loginAttempts = _fileDataSet.GetLoginAttempts(login);
-			bool blocked = _fileDataSet.GetLoginBlock(login);
+			Guid uuid = DataSet.VerifyPassword(
+				login, password, out bool result, 
+				out bool blocked, out int loginAttempts);
+			int maxLoginAttempts = int.Parse(DataSet.GetConfig("MaxLoginAttempts"));
 
 			if (result == false)
 			{
 				if (loginAttempts == 0)
-				{
-					_fileDataSet.FirstLoginAttempt(login);
-				}
+					DataSet.FirstLoginAttempt(uuid);
 				else
-				{
-					_fileDataSet.AddLoginAttempt(login);
-				}
+					DataSet.AddLoginAttempt(uuid);
 				loginAttempts++;
 				if (loginAttempts < maxLoginAttempts && blocked == false)
 				{
@@ -54,7 +50,7 @@ namespace InformationSystem_Lab_2
 			}
 			if (loginAttempts >= maxLoginAttempts) 
 			{
-				_fileDataSet.BlockIfNot(login, "Превышен лимит попыток входа!");
+				DataSet.BlockIfNot(uuid, "Превышен лимит попыток входа!");
 				MessageBox.Show("Вы превысили лимит неудачных попыток авторизации!\nСвяжитесь с администратором и попробуйте позже.", "Временная блокировка аккаунта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
@@ -63,16 +59,13 @@ namespace InformationSystem_Lab_2
 				MessageBox.Show("Ваш аккаунт заблокирован!\nСвяжитесь с администратором и попробуйте позже.", "Временная блокировка аккаунта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
-
-			Guid uuid = _fileDataSet.Login(login, password);
 			if (uuid == Guid.Empty) 
 			{
 				MessageBox.Show("Что то пошло не так...", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return;
 			}
-			SuccessfulLogin?.Invoke(uuid);
+			SuccessfulLogin?.Invoke(uuid, login);
 			DialogResult = DialogResult.OK;
-			MessageBox.Show($"Добро пожаловать!");
 		}
 	}
 }

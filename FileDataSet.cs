@@ -19,12 +19,13 @@ namespace InformationSystem_Lab_2
 		private const string CONFIGS_FILE = "configx.ConfigsData";
 		private const string BLOCKS_FILE = "blocks.BlockData";
 		private const string LOGS_FILE = "logs.EventLogData";
+		private const string ADMINS_FILE = "admins.Guid";
 
 		public FileDataSet()
 		{
 			foreach (string file in new string[] { 
 				USERS_FILE, ATTEMPTS_FILE, CONFIGS_FILE, 
-				BLOCKS_FILE, LOGS_FILE
+				BLOCKS_FILE, LOGS_FILE, ADMINS_FILE
 			})
 			{
 				if (File.Exists(file) == false)
@@ -57,24 +58,32 @@ namespace InformationSystem_Lab_2
 			StartWatcher(true);
 		}
 
-		public bool VerifyPassword(string login, string password)
+		public Guid VerifyPassword(
+			string login, string password, out bool result,
+			out bool blocked, out int attempts)
 		{
-			foreach (UserData user in selectUsersData())
+			Guid uuid = Guid.Empty;
+			result = false;
+			blocked = false;
+			foreach (UserData user in selectUsersData(u => u.login == login))
 			{
-				if (user.login == login)
+				if (user.password == password)
 				{
-					if (user.password == password)
-						return true;
-					else
-						return false;
+					result = true;
+					uuid = user.uuid;
+					break;
 				}
 			}
-			return false;
+			blocked = getUuidBlock(uuid);
+			attempts = getLoginAttemptsCount(uuid);
+
+			if (uuid == Guid.Empty)
+				return Guid.Empty;
+			return uuid;
 		}
 
-		public void FirstLoginAttempt(string login)
+		public void FirstLoginAttempt(Guid uuid)
 		{
-			Guid uuid = getUserUuid(login);
 			if (uuid == null)
 				return;
 			createLine(ATTEMPTS_FILE, new LoginAttemptsData(uuid));
@@ -83,9 +92,8 @@ namespace InformationSystem_Lab_2
 				"Пользователь неудачно авторизовался в системе."));
 		}
 
-		public void AddLoginAttempt(string login)
+		public void AddLoginAttempt(Guid uuid)
 		{
-			Guid uuid = getUserUuid(login);
 			if (uuid == Guid.Empty)
 				return;
 			updateAttempts(
@@ -97,44 +105,66 @@ namespace InformationSystem_Lab_2
 				"Пользователь неудачно авторизовался в системе."));
 		}
 
-		public Guid Login(string login, string password)
+		public void LogIn(Guid uuid)
 		{
-			Guid uuid = Guid.Empty;
-			foreach (UserData user in selectUsersData(u => u.login == login)) 
-			{
-				if (user.password == password)
-					uuid = user.uuid;
-				break;
-			}
-			if (uuid == Guid.Empty || getUuidBlock(uuid))
-				return Guid.Empty;
-
 			deleteLoginAttempts(a => a.uuid == uuid);
 			createLine(LOGS_FILE, new EventLogData(
 				EventLogData.EventLogType.UserLogIn, uuid, getIp(),
 				"Пользователь успешно авторизовался в системе."));
-
-			return uuid;
 		}
 
-		public bool TryRegister(string login, string password)
+		public void ReLogIn(Guid before_uuid, Guid after_uuid)
 		{
+			createLine(LOGS_FILE, new EventLogData(
+				EventLogData.EventLogType.UserReLogIn, before_uuid, getIp(),
+				$"Пользователь авторизовался в системе под другой учётной записью(uuid={after_uuid})."));
+		}
+
+		public void LogOut(Guid uuid)
+		{
+			createLine(LOGS_FILE, new EventLogData(
+				EventLogData.EventLogType.UserLogOut, uuid, getIp(),
+				"Пользователь самостоятельно вышел из системы."));
+		}
+
+		public bool IsAdmin(Guid uuid)
+		{
+			string userUuid = uuid.ToString();
+			foreach (string line in readLines(ADMINS_FILE))
+			{
+				if (userUuid.Equals(line))
+					return true;
+			}
+			return false;
+		}
+
+		public Guid TryRegister(string login, string password, 
+			Guid adminUuid, out bool result, out bool denied)
+		{
+			result = false;
+			denied = false;
+
+			if (IsAdmin(adminUuid) == false)
+			{
+				denied = true;
+				return Guid.Empty;
+			}
+
 			Guid uuid = getUserUuid(login);
 			if (uuid != Guid.Empty)
-				return false;
+				return Guid.Empty;
 
 			UserData user = new UserData(login, password);
 			createLine(USERS_FILE, user);
 			createLine(LOGS_FILE, new EventLogData(
 				EventLogData.EventLogType.UserRegisrated, user.uuid, getIp(), 
 				"Новый пользователь зарегистрировался в системе."));
-
-			return true;
+			result = true;
+			return user.uuid;
 		}
 
-		public void BlockIfNot(string login, string reason)
+		public void BlockIfNot(Guid uuid, string reason)
 		{
-			Guid uuid = getUserUuid(login);
 			if (uuid == Guid.Empty)
 				return;
 			foreach(BlockData block in selectBlockData(b => b.uuid == uuid && b.reason == reason))
@@ -185,11 +215,6 @@ namespace InformationSystem_Lab_2
 			return defaultConfigs[configName];
 		}
 
-		public int GetLoginAttempts(string login)
-		{
-			return getLoginAttemptsCount(login);
-		}
-
 		private Guid getUserUuid(string login)
 		{
 			foreach (UserData user in selectUsersData(u => u.login == login))
@@ -199,17 +224,11 @@ namespace InformationSystem_Lab_2
 			return Guid.Empty;
 		}
 
-		private int getLoginAttemptsCount(string login)
+		private int getLoginAttemptsCount(Guid uuid)
 		{
-			UserData searchingUser = null;
-			foreach (UserData user in selectUsersData(u => u.login == login))
-			{
-				searchingUser = user;
-				break;
-			}
-			if (searchingUser == null)
+			if (uuid == Guid.Empty)
 				return 0;
-			foreach (LoginAttemptsData attempts in selectLoginAttempts(a => a.uuid == searchingUser.uuid))
+			foreach (LoginAttemptsData attempts in selectLoginAttempts(a => a.uuid == uuid))
 			{
 				return attempts.attempts;
 			}
@@ -219,7 +238,7 @@ namespace InformationSystem_Lab_2
 		#region Select
 		private IEnumerable<BlockData> selectBlockData(Predicate<BlockData> selectPredicate = null)
 		{
-			foreach (BlockData data in readLines(BLOCKS_FILE, new BlockData()))
+			foreach (BlockData data in readFileData(BLOCKS_FILE, new BlockData()))
 			{
 				if (selectPredicate == null || selectPredicate(data))
 					yield return data;
@@ -227,7 +246,7 @@ namespace InformationSystem_Lab_2
 		}
 		private IEnumerable<ConfigData> selectConfigData(Predicate<ConfigData> selectPredicate = null)
 		{
-			foreach (ConfigData data in readLines(CONFIGS_FILE, new ConfigData()))
+			foreach (ConfigData data in readFileData(CONFIGS_FILE, new ConfigData()))
 			{
 				if (selectPredicate == null || selectPredicate(data))
 					yield return data;
@@ -236,7 +255,7 @@ namespace InformationSystem_Lab_2
 
 		private IEnumerable<UserData> selectUsersData(Predicate<UserData> selectPredicate = null)
 		{
-			foreach (UserData data in readLines(USERS_FILE, new UserData()))
+			foreach (UserData data in readFileData(USERS_FILE, new UserData()))
 			{
 				if (selectPredicate == null || selectPredicate(data))
 					yield return data;
@@ -245,7 +264,7 @@ namespace InformationSystem_Lab_2
 
 		private IEnumerable<LoginAttemptsData> selectLoginAttempts(Predicate<LoginAttemptsData> selectPredicate = null)
 		{
-			foreach (LoginAttemptsData data in readLines(ATTEMPTS_FILE, new LoginAttemptsData()))
+			foreach (LoginAttemptsData data in readFileData(ATTEMPTS_FILE, new LoginAttemptsData()))
 			{
 				if (selectPredicate == null || selectPredicate(data))
 					yield return data;
@@ -280,14 +299,20 @@ namespace InformationSystem_Lab_2
 			}
 		}
 
-		private IEnumerable<IFileData> readLines(string fileName, IFileData type)
+		private IEnumerable<IFileData> readFileData(string fileName, IFileData type)
+		{
+			foreach(string line in readLines(fileName))
+				yield return type.FromLine(line);
+		}
+
+		private IEnumerable<string> readLines(string fileName)
 		{
 			string line;
 			using (var reader = File.OpenText(fileName))
 			{
 				while ((line = reader.ReadLine()) != null)
 				{
-					yield return type.FromLine(line);
+					yield return line;
 				}
 			}
 		}
@@ -331,7 +356,7 @@ namespace InformationSystem_Lab_2
 			string tempFile = Path.GetTempFileName();
 			using (var writer = new StreamWriter(tempFile))
 			{
-				foreach (IFileData data in readLines(fileName, type))
+				foreach (IFileData data in readFileData(fileName, type))
 				{
 					pipeAction?.Invoke(data, writer);
 				}

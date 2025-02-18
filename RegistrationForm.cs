@@ -12,17 +12,33 @@ namespace InformationSystem_Lab_2
 {
 	public partial class RegistrationForm : Form
 	{
-		public event Action<Guid> SuccessfulRegistration;
-		private FileDataSet _fileDataSet;
-		private PasswordGeneratorForm GeneratorForm;
+		public event Action<Guid, string, string> SuccessfulRegistration;
+		private readonly FileDataSet DataSet;
+		private readonly PasswordGeneratorForm GeneratorForm;
+		private Guid adminUuid;
+
 		public RegistrationForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
+			adminUuid = Guid.Empty;
 			GeneratorForm = new PasswordGeneratorForm();
 			GeneratorForm.GeneratedPasswordAccepted += GeneratorForm_GeneratedPasswordAccepted;
 			GeneratedPTB.ReadOnly = true;
-			_fileDataSet = fileDataSet;
+			DataSet = fileDataSet;
 		}
+
+		public DialogResult BeginRegistration(Guid uuid)
+		{
+			if (DataSet.IsAdmin(uuid) == false)
+			{
+				MessageBox.Show("Вы не обладаете правами администратора!", "Доступ запрещён!",
+					MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				return DialogResult.Ignore;
+			}
+			adminUuid = uuid;
+			return ShowDialog();
+		}
+
 
 		private void GeneratorForm_GeneratedPasswordAccepted(string password)
 		{
@@ -47,6 +63,14 @@ namespace InformationSystem_Lab_2
 
 		private void SubmitB_Click(object sender, EventArgs e)
 		{
+			if (DataSet.IsAdmin(adminUuid) == false)
+			{
+				MessageBox.Show("Вы не обладаете правами администратора!", "Доступ запрещён!",
+					MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				DialogResult = DialogResult.Ignore;
+				return;
+			}
+
 			string login = LoginTB.Text;
 			string password = GeneratedPTB.Password;
 			if (login.Length == 0 || password.Length == 0)
@@ -61,21 +85,28 @@ namespace InformationSystem_Lab_2
 				return;
 			}
 
-			bool result = _fileDataSet.TryRegister(login, password);
+			Guid uuid = DataSet.TryRegister(login, password, adminUuid, out bool result, out bool denied);
+			if (denied)
+			{
+				MessageBox.Show("Вы не обладаете правами администратора!", "Доступ запрещён!",
+					MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				DialogResult = DialogResult.Ignore;
+				return;
+			}
 			if (result == false)
 			{
 				MessageBox.Show("Логин не подходит, укажите другой!", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
 
-			Guid uuid = _fileDataSet.Login(login, password);
 			if (uuid == Guid.Empty)
 			{
 				MessageBox.Show("Что то пошло не так...", "Попробуйте снова", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return;
 			}
-			SuccessfulRegistration?.Invoke(uuid);
+			SuccessfulRegistration?.Invoke(uuid, login, password);
 			DialogResult = DialogResult.OK;
+			adminUuid = Guid.Empty;
 		}
 
 		private void LoginTB_TextChanged(object sender, EventArgs e)
