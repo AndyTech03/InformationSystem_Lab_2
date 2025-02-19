@@ -35,10 +35,10 @@
 			this.UserGB = new System.Windows.Forms.GroupBox();
 			this.LoginL = new System.Windows.Forms.Label();
 			this.UsersGB = new System.Windows.Forms.GroupBox();
+			this.UsersConfigB = new System.Windows.Forms.Button();
 			this.BlockB = new System.Windows.Forms.Button();
 			this.RegisterB = new System.Windows.Forms.Button();
 			this.UnblockB = new System.Windows.Forms.Button();
-			this.UsersConfigB = new System.Windows.Forms.Button();
 			this.JournalGB = new System.Windows.Forms.GroupBox();
 			this.JournalConfigB = new System.Windows.Forms.Button();
 			this.ArchiveB = new System.Windows.Forms.Button();
@@ -131,6 +131,18 @@
 			this.UsersGB.TabStop = false;
 			this.UsersGB.Text = "Пользователи";
 			// 
+			// UsersConfigB
+			// 
+			this.UsersConfigB.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.UsersConfigB.Location = new System.Drawing.Point(10, 150);
+			this.UsersConfigB.Margin = new System.Windows.Forms.Padding(5);
+			this.UsersConfigB.Name = "UsersConfigB";
+			this.UsersConfigB.Size = new System.Drawing.Size(200, 40);
+			this.UsersConfigB.TabIndex = 4;
+			this.UsersConfigB.Text = "Конфигурировать";
+			this.UsersConfigB.UseVisualStyleBackColor = true;
+			this.UsersConfigB.Click += new System.EventHandler(this.UsersConfigB_Click);
+			// 
 			// BlockB
 			// 
 			this.BlockB.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -141,6 +153,7 @@
 			this.BlockB.TabIndex = 0;
 			this.BlockB.Text = "Заблокировать";
 			this.BlockB.UseVisualStyleBackColor = true;
+			this.BlockB.Click += new System.EventHandler(this.BlockB_Click);
 			// 
 			// RegisterB
 			// 
@@ -164,17 +177,7 @@
 			this.UnblockB.TabIndex = 1;
 			this.UnblockB.Text = "Разблокировать";
 			this.UnblockB.UseVisualStyleBackColor = true;
-			// 
-			// UsersConfigB
-			// 
-			this.UsersConfigB.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.UsersConfigB.Location = new System.Drawing.Point(10, 150);
-			this.UsersConfigB.Margin = new System.Windows.Forms.Padding(5);
-			this.UsersConfigB.Name = "UsersConfigB";
-			this.UsersConfigB.Size = new System.Drawing.Size(200, 40);
-			this.UsersConfigB.TabIndex = 4;
-			this.UsersConfigB.Text = "Конфигурировать";
-			this.UsersConfigB.UseVisualStyleBackColor = true;
+			this.UnblockB.Click += new System.EventHandler(this.UnblockB_Click);
 			// 
 			// JournalGB
 			// 

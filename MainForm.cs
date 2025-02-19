@@ -14,6 +14,8 @@ namespace InformationSystem_Lab_2
 	{
 		private readonly RegistrationForm RegistrationDialog;
 		private readonly LoginForm LoginDialog;
+		private readonly BlockForm BlockDialog;
+		private readonly ConfigsForm ConfigsDialog;
 		private readonly FileDataSet DataSet;
 		private Guid _user_uuid = Guid.NewGuid(); // Чтобы первый `UserUuid = Guid.Empty;` вызвал очистку формы.
 		private Guid UserUuid
@@ -49,11 +51,15 @@ namespace InformationSystem_Lab_2
 			RegistrationDialog.SuccessfulRegistration += RegistrationForm_SuccessfulRegistration;
 			LoginDialog = new LoginForm(fileDataSet);
 			LoginDialog.SuccessfulLogin += LoginForm_SuccessfulLogin;
+			BlockDialog = new BlockForm(fileDataSet);
+			ConfigsDialog = new ConfigsForm(fileDataSet);
 		}
 
 		private void RegistrationForm_SuccessfulRegistration(Guid uuid, string login, string password)
 		{
-			MessageBox.Show($"uuid: {uuid}\nЛогин: {login}\nПароль: {password}", "Пользователь зарегистрирован");
+			MessageBox.Show(
+				$"uuid: {uuid}\nЛогин: {login}\nПароль: {password}", "Пользователь зарегистрирован", 
+				MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		private void LoginForm_SuccessfulLogin(Guid uuid, string login)
@@ -121,6 +127,21 @@ namespace InformationSystem_Lab_2
 		private void RegisterB_Click(object sender, EventArgs e)
 		{
 			RegistrationDialog.BeginRegistration(UserUuid);
+		}
+
+		private void BlockB_Click(object sender, EventArgs e)
+		{
+			BlockDialog.BeginBlockDialog(UserUuid);
+		}
+
+		private void UnblockB_Click(object sender, EventArgs e)
+		{
+			BlockDialog.BeginBlockDialog(UserUuid);
+		}
+
+		private void UsersConfigB_Click(object sender, EventArgs e)
+		{
+			ConfigsDialog.BeginConfigDialog(UserUuid);
 		}
 	}
 }

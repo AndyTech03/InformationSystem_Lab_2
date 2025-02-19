@@ -106,12 +106,16 @@ namespace InformationSystem_Lab_2
 			}
 			SuccessfulRegistration?.Invoke(uuid, login, password);
 			DialogResult = DialogResult.OK;
-			adminUuid = Guid.Empty;
 		}
 
 		private void LoginTB_TextChanged(object sender, EventArgs e)
 		{
 			GeneratedPTB.Password = "";
+		}
+
+		private void RegistrationForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			adminUuid = Guid.Empty;
 		}
 	}
 }

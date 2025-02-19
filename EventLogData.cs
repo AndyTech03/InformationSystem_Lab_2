@@ -21,7 +21,8 @@ namespace InformationSystem_Lab_2
 			LogsArchived,
 			UserDataAction,
 			UserDataChainged,
-			UserBlocked,
+			UserBlocked, 
+			UserUnBlocked,
 			UserRegisrated,
 		}
 

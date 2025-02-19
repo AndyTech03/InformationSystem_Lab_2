@@ -21,6 +21,14 @@ namespace InformationSystem_Lab_2
 		private const string LOGS_FILE = "logs.EventLogData";
 		private const string ADMINS_FILE = "admins.Guid";
 
+		private static Dictionary<string, ConfigData> DEFAULT_CONFIGS => new Dictionary<string, ConfigData>()
+		{
+			{ "MaxLoginAttempts", new ConfigData("MaxLoginAttempts", "3", 
+				value => int.TryParse(value, out int data) && data > 0 && data <= 10,
+				"число в диапозоне от 1 до 10") }
+		};
+		public static readonly Guid SYSTEM_UUID = Guid.NewGuid();
+
 		public FileDataSet()
 		{
 			foreach (string file in new string[] { 
@@ -67,12 +75,10 @@ namespace InformationSystem_Lab_2
 			blocked = false;
 			foreach (UserData user in selectUsersData(u => u.login == login))
 			{
+				uuid = user.uuid;
 				if (user.password == password)
-				{
 					result = true;
-					uuid = user.uuid;
-					break;
-				}
+				break;
 			}
 			blocked = getUuidBlock(uuid);
 			attempts = getLoginAttemptsCount(uuid);
@@ -84,7 +90,7 @@ namespace InformationSystem_Lab_2
 
 		public void FirstLoginAttempt(Guid uuid)
 		{
-			if (uuid == null)
+			if (uuid == Guid.Empty)
 				return;
 			createLine(ATTEMPTS_FILE, new LoginAttemptsData(uuid));
 			createLine(LOGS_FILE, new EventLogData(
@@ -129,6 +135,8 @@ namespace InformationSystem_Lab_2
 
 		public bool IsAdmin(Guid uuid)
 		{
+			if (uuid == SYSTEM_UUID)
+				return true;
 			string userUuid = uuid.ToString();
 			foreach (string line in readLines(ADMINS_FILE))
 			{
@@ -163,18 +171,49 @@ namespace InformationSystem_Lab_2
 			return user.uuid;
 		}
 
-		public void BlockIfNot(Guid uuid, string reason)
+		public void UnBlockIfNot(Guid uuid, Guid adminUuid, out bool denied)
 		{
+			denied = false;
+			if (IsAdmin(adminUuid) == false)
+			{
+				denied = true;
+				return;
+			}
+			if (uuid == Guid.Empty)
+				return;
+			deleteLines(BLOCKS_FILE, new BlockData(), data => (data as BlockData).uuid == uuid);
+			deleteLines(ATTEMPTS_FILE, new LoginAttemptsData(), data => (data as LoginAttemptsData).uuid == uuid);
+			createLine(LOGS_FILE, new EventLogData(
+				EventLogData.EventLogType.UserUnBlocked, uuid, getIp(), 
+				$"Пользователь был разблокирован администратором (uuid: {adminUuid})"));
+		}
+
+		public void BlockIfNot(Guid uuid, string reason, Guid adminUuid, out bool denied)
+		{
+			denied = false;
+			if (IsAdmin(adminUuid) == false)
+			{
+				denied = true;
+				return;
+			}
 			if (uuid == Guid.Empty)
 				return;
 			foreach(BlockData block in selectBlockData(b => b.uuid == uuid && b.reason == reason))
 				return;
 			createLine(BLOCKS_FILE, new BlockData(uuid, reason));
 			createLine(LOGS_FILE, new EventLogData(
-				EventLogData.EventLogType.UserBlocked, uuid, getIp(), reason));
+				EventLogData.EventLogType.UserBlocked, uuid, getIp(), 
+				$"Пользователь был заблокирован {(adminUuid == SYSTEM_UUID ? "системой" : $"администратором (uuid: {adminUuid})")}. Причина: {reason}"));
 		}
 
 		#region Get
+		public (UserData[] users, BlockData[] blockedUsers, Guid[] admins) GetBLockedUsers()
+		{
+			UserData[] users = selectUsersData().ToArray();
+			BlockData[] blockedUsers = selectBlockData().ToArray();
+			Guid[] admins = readLines(ADMINS_FILE).Select(line => Guid.Parse(line)).ToArray();
+			return (users, blockedUsers, admins);
+		}
 		private IPAddress getIp()
 		{
 			IPAddress[] hosts = Dns.GetHostAddresses(Dns.GetHostName());
@@ -197,22 +236,68 @@ namespace InformationSystem_Lab_2
 			return false;
 		}
 
+		public ConfigData[] GetConfigs()
+		{
+			Dictionary<string, ConfigData> configs = DEFAULT_CONFIGS;
+			foreach (ConfigData config in selectConfigData())
+			{
+				configs[config.name].SetData(config.data);
+			}
+			return configs.Select(c => c.Value).ToArray();
+		}
+
+		public void SetConfig(string name, string value, Guid adminUuid, out string result, out bool denied)
+		{
+			denied = false;
+			result = null;
+			if (IsAdmin(adminUuid) == false)
+			{
+				denied = true;
+				return;
+			}
+			if (DEFAULT_CONFIGS.ContainsKey(name) == false)
+			{
+				throw new KeyNotFoundException($"'{name}' - несуществующее имя конфига!");
+			}
+			Dictionary<string, ConfigData> configs = DEFAULT_CONFIGS;
+			if (configs.ContainsKey(name))
+			{
+				var configData = configs[name];
+				deleteLines(CONFIGS_FILE, new ConfigData(), data => (data as ConfigData).name == name);
+				if (value == null || value == configData.data)
+				{
+					result = $"Конфигурация `{name}` выставлено в значение по умолчанию.";
+					createLine(LOGS_FILE, new EventLogData(
+						EventLogData.EventLogType.ConfigChanged, adminUuid, getIp(),
+						$"Администратор изменил конфигурацию `{name} на значение по умолчанию `{configData.data}`."));
+				}
+				else if (configData.SetData(value))
+				{
+					createLine(CONFIGS_FILE, configData);
+					result = $"Конфигурация `{name}` успешно изменена.";
+					createLine(LOGS_FILE, new EventLogData(
+						EventLogData.EventLogType.ConfigChanged, adminUuid, getIp(),
+						$"Администратор изменил конфигурацию `{name}` на значение `{value}`."));
+				}
+				else
+				{
+					result = $"Значение {value} не подходит, требуется '{configData.note}'.";
+				}
+			}
+		}
+
 		public string GetConfig(string configName)
 		{
-			Dictionary<string, string> defaultConfigs = new Dictionary<string, string>()
-			{
-				{ "MaxLoginAttempts", "3"}
-			};
-
-			if (defaultConfigs.ContainsKey(configName) == false)
+			if (DEFAULT_CONFIGS.ContainsKey(configName) == false)
 			{
 				throw new KeyNotFoundException($"'{configName}' - несуществующее имя конфига!");
 			}
+
 			foreach (ConfigData config in selectConfigData(c => c.name == configName))
 			{
 				return config.data;
 			}
-			return defaultConfigs[configName];
+			return DEFAULT_CONFIGS[configName].data;
 		}
 
 		private Guid getUserUuid(string login)

@@ -50,7 +50,7 @@ namespace InformationSystem_Lab_2
 			}
 			if (loginAttempts >= maxLoginAttempts) 
 			{
-				DataSet.BlockIfNot(uuid, "Превышен лимит попыток входа!");
+				DataSet.BlockIfNot(uuid, "Превышен лимит попыток входа!", FileDataSet.SYSTEM_UUID, out bool denied);
 				MessageBox.Show("Вы превысили лимит неудачных попыток авторизации!\nСвяжитесь с администратором и попробуйте позже.", "Временная блокировка аккаунта", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}

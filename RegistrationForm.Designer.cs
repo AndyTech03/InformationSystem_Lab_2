@@ -31,10 +31,10 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.label1 = new System.Windows.Forms.Label();
 			this.LoginTB = new System.Windows.Forms.TextBox();
-			this.GeneratePasswordB = new System.Windows.Forms.Button();
-			this.SubmitB = new System.Windows.Forms.Button();
 			this.GeneratedPTB = new InformationSystem_Lab_2.PasswordTextBox();
 			this.ConfirmedPTB = new InformationSystem_Lab_2.PasswordTextBox();
+			this.GeneratePasswordB = new System.Windows.Forms.Button();
+			this.SubmitB = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -85,6 +85,31 @@
 			this.LoginTB.TabIndex = 1;
 			this.LoginTB.TextChanged += new System.EventHandler(this.LoginTB_TextChanged);
 			// 
+			// GeneratedPTB
+			// 
+			this.GeneratedPTB.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.GeneratedPTB.Font = new System.Drawing.Font("Arial Narrow", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.GeneratedPTB.Location = new System.Drawing.Point(38, 179);
+			this.GeneratedPTB.Margin = new System.Windows.Forms.Padding(5);
+			this.GeneratedPTB.Name = "GeneratedPTB";
+			this.GeneratedPTB.Password = "";
+			this.GeneratedPTB.ReadOnly = false;
+			this.GeneratedPTB.Size = new System.Drawing.Size(356, 48);
+			this.GeneratedPTB.TabIndex = 0;
+			this.GeneratedPTB.TabStop = false;
+			// 
+			// ConfirmedPTB
+			// 
+			this.ConfirmedPTB.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ConfirmedPTB.Font = new System.Drawing.Font("Arial Narrow", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.ConfirmedPTB.Location = new System.Drawing.Point(38, 237);
+			this.ConfirmedPTB.Margin = new System.Windows.Forms.Padding(5);
+			this.ConfirmedPTB.Name = "ConfirmedPTB";
+			this.ConfirmedPTB.Password = "";
+			this.ConfirmedPTB.ReadOnly = false;
+			this.ConfirmedPTB.Size = new System.Drawing.Size(356, 48);
+			this.ConfirmedPTB.TabIndex = 3;
+			// 
 			// GeneratePasswordB
 			// 
 			this.GeneratePasswordB.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -111,31 +136,6 @@
 			this.SubmitB.UseVisualStyleBackColor = true;
 			this.SubmitB.Click += new System.EventHandler(this.SubmitB_Click);
 			// 
-			// GeneratedPTB
-			// 
-			this.GeneratedPTB.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.GeneratedPTB.Font = new System.Drawing.Font("Arial Narrow", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.GeneratedPTB.Location = new System.Drawing.Point(38, 179);
-			this.GeneratedPTB.Margin = new System.Windows.Forms.Padding(5);
-			this.GeneratedPTB.Name = "GeneratedPTB";
-			this.GeneratedPTB.Password = "";
-			this.GeneratedPTB.ReadOnly = false;
-			this.GeneratedPTB.Size = new System.Drawing.Size(356, 48);
-			this.GeneratedPTB.TabIndex = 0;
-			this.GeneratedPTB.TabStop = false;
-			// 
-			// ConfirmedPTB
-			// 
-			this.ConfirmedPTB.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ConfirmedPTB.Font = new System.Drawing.Font("Arial Narrow", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.ConfirmedPTB.Location = new System.Drawing.Point(38, 237);
-			this.ConfirmedPTB.Margin = new System.Windows.Forms.Padding(5);
-			this.ConfirmedPTB.Name = "ConfirmedPTB";
-			this.ConfirmedPTB.Password = "";
-			this.ConfirmedPTB.ReadOnly = false;
-			this.ConfirmedPTB.Size = new System.Drawing.Size(356, 48);
-			this.ConfirmedPTB.TabIndex = 3;
-			// 
 			// RegistrationForm
 			// 
 			this.AcceptButton = this.SubmitB;
@@ -149,6 +149,7 @@
 			this.Name = "RegistrationForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Регистрация";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RegistrationForm_FormClosing);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);
