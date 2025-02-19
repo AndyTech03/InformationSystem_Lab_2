@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.AuthB = new System.Windows.Forms.Button();
 			this.ReAuthB = new System.Windows.Forms.Button();
 			this.MainRTB = new System.Windows.Forms.RichTextBox();
@@ -44,6 +45,7 @@
 			this.ArchiveB = new System.Windows.Forms.Button();
 			this.SearchB = new System.Windows.Forms.Button();
 			this.DearchiveB = new System.Windows.Forms.Button();
+			this.AfkTimer = new System.Windows.Forms.Timer(this.components);
 			this.UserGB.SuspendLayout();
 			this.UsersGB.SuspendLayout();
 			this.JournalGB.SuspendLayout();
@@ -236,6 +238,11 @@
 			this.DearchiveB.Text = "Архивировать";
 			this.DearchiveB.UseVisualStyleBackColor = true;
 			// 
+			// AfkTimer
+			// 
+			this.AfkTimer.Interval = 1000;
+			this.AfkTimer.Tick += new System.EventHandler(this.AfkTimer_Tick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 26F);
@@ -277,5 +284,6 @@
 		private System.Windows.Forms.Button ArchiveB;
 		private System.Windows.Forms.Button SearchB;
 		private System.Windows.Forms.Button DearchiveB;
+		private System.Windows.Forms.Timer AfkTimer;
 	}
 }

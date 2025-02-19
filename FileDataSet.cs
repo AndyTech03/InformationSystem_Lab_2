@@ -16,16 +16,23 @@ namespace InformationSystem_Lab_2
 	{
 		private const string USERS_FILE = "users.UserData";
 		private const string ATTEMPTS_FILE = "attempts.LoginAttemptsData";
-		private const string CONFIGS_FILE = "configx.ConfigsData";
+		private const string CONFIGS_FILE = "configs.ConfigsData";
 		private const string BLOCKS_FILE = "blocks.BlockData";
 		private const string LOGS_FILE = "logs.EventLogData";
 		private const string ADMINS_FILE = "admins.Guid";
 
+		public static readonly string MaxLoginAttempts = "MaxLoginAttempts";
+		public static readonly string AfkDelay = "AfkDelay";
 		private static Dictionary<string, ConfigData> DEFAULT_CONFIGS => new Dictionary<string, ConfigData>()
 		{
-			{ "MaxLoginAttempts", new ConfigData("MaxLoginAttempts", "3", 
+			{ MaxLoginAttempts, new ConfigData(MaxLoginAttempts, "3", 
 				value => int.TryParse(value, out int data) && data > 0 && data <= 10,
-				"число в диапозоне от 1 до 10") }
+				"число в диапозоне от 1 до 10") },
+			{ AfkDelay, new ConfigData(AfkDelay, "15м",
+				value => "смч".Contains(value.Last()) && 
+					int.TryParse(value.Substring(0, value.Length-1), out int data) && 
+					data > 0 && data < int.MaxValue,
+				"число больше 0 + с|м|ч") }
 		};
 		public static readonly Guid SYSTEM_UUID = Guid.NewGuid();
 
@@ -126,11 +133,16 @@ namespace InformationSystem_Lab_2
 				$"Пользователь авторизовался в системе под другой учётной записью(uuid={after_uuid})."));
 		}
 
-		public void LogOut(Guid uuid)
+		public void LogOut(Guid uuid, bool isAfk = false)
 		{
-			createLine(LOGS_FILE, new EventLogData(
-				EventLogData.EventLogType.UserLogOut, uuid, getIp(),
-				"Пользователь самостоятельно вышел из системы."));
+			if (isAfk)
+				createLine(LOGS_FILE, new EventLogData(
+					EventLogData.EventLogType.UserAfk, uuid, getIp(),
+					"Пользователь не активен, осуществлён выход из системы."));
+			else
+				createLine(LOGS_FILE, new EventLogData(
+					EventLogData.EventLogType.UserLogOut, uuid, getIp(),
+					"Пользователь самостоятельно вышел из системы."));
 		}
 
 		public bool IsAdmin(Guid uuid)
@@ -264,7 +276,12 @@ namespace InformationSystem_Lab_2
 			{
 				var configData = configs[name];
 				deleteLines(CONFIGS_FILE, new ConfigData(), data => (data as ConfigData).name == name);
-				if (value == null || value == configData.data)
+
+				if (value == configData.data)
+				{
+					result = null;
+				}
+				else if (value == null)
 				{
 					result = $"Конфигурация `{name}` выставлено в значение по умолчанию.";
 					createLine(LOGS_FILE, new EventLogData(
@@ -281,7 +298,7 @@ namespace InformationSystem_Lab_2
 				}
 				else
 				{
-					result = $"Значение {value} не подходит, требуется '{configData.note}'.";
+					result = $"Для конфигурации `{name}` значение `{value}` не подходит, требуется `{configData.note}`.";
 				}
 			}
 		}

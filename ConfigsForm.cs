@@ -51,7 +51,10 @@ namespace InformationSystem_Lab_2
 					DialogResult = DialogResult.Ignore;
 					return;
 				}
-				MessageBox.Show(result);
+				if (result != null)
+				{
+					MessageBox.Show(result);
+				}
 			}
 			UpdateData();
 		}

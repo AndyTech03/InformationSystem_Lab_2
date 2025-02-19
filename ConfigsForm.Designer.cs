@@ -33,8 +33,6 @@
 			this.ConfigsDS = new System.Data.DataSet();
 			this.ConfigsDGV = new System.Windows.Forms.DataGridView();
 			this.ConfigsBN = new System.Windows.Forms.BindingNavigator(this.components);
-			this.bindingNavigatorPositionItem = new System.Windows.Forms.ToolStripTextBox();
-			this.bindingNavigatorCountItem = new System.Windows.Forms.ToolStripLabel();
 			this.bindingNavigatorSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.RefreshB = new System.Windows.Forms.ToolStripButton();
 			this.SaveB = new System.Windows.Forms.ToolStripButton();
@@ -45,7 +43,6 @@
 			this.ResetB = new System.Windows.Forms.ToolStripButton();
 			this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.valueDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			((System.ComponentModel.ISupportInitialize)(this.ConfigsDS)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.ConfigsDGV)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.ConfigsBN)).BeginInit();
@@ -83,13 +80,10 @@
 			// 
 			this.ConfigsBN.AddNewItem = null;
 			this.ConfigsBN.BindingSource = this.ConfigsBS;
-			this.ConfigsBN.CountItem = this.bindingNavigatorCountItem;
+			this.ConfigsBN.CountItem = null;
 			this.ConfigsBN.DeleteItem = null;
 			this.ConfigsBN.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.ConfigsBN.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bindingNavigatorPositionItem,
-            this.bindingNavigatorCountItem,
-            this.toolStripSeparator1,
             this.ResetB,
             this.bindingNavigatorSeparator1,
             this.RefreshB,
@@ -100,27 +94,10 @@
 			this.ConfigsBN.MoveNextItem = null;
 			this.ConfigsBN.MovePreviousItem = null;
 			this.ConfigsBN.Name = "ConfigsBN";
-			this.ConfigsBN.PositionItem = this.bindingNavigatorPositionItem;
+			this.ConfigsBN.PositionItem = null;
 			this.ConfigsBN.Size = new System.Drawing.Size(782, 27);
 			this.ConfigsBN.TabIndex = 1;
 			this.ConfigsBN.Text = "bindingNavigator1";
-			// 
-			// bindingNavigatorPositionItem
-			// 
-			this.bindingNavigatorPositionItem.AccessibleName = "Положение";
-			this.bindingNavigatorPositionItem.AutoSize = false;
-			this.bindingNavigatorPositionItem.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.bindingNavigatorPositionItem.Name = "bindingNavigatorPositionItem";
-			this.bindingNavigatorPositionItem.Size = new System.Drawing.Size(50, 27);
-			this.bindingNavigatorPositionItem.Text = "0";
-			this.bindingNavigatorPositionItem.ToolTipText = "Текущее положение";
-			// 
-			// bindingNavigatorCountItem
-			// 
-			this.bindingNavigatorCountItem.Name = "bindingNavigatorCountItem";
-			this.bindingNavigatorCountItem.Size = new System.Drawing.Size(55, 24);
-			this.bindingNavigatorCountItem.Text = "для {0}";
-			this.bindingNavigatorCountItem.ToolTipText = "Общее число элементов";
 			// 
 			// bindingNavigatorSeparator1
 			// 
@@ -197,11 +174,6 @@
 			this.valueDataGridViewTextBoxColumn.Name = "valueDataGridViewTextBoxColumn";
 			this.valueDataGridViewTextBoxColumn.Width = 300;
 			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
-			// 
 			// ConfigsForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 26F);
@@ -234,8 +206,6 @@
 		private System.Data.DataSet ConfigsDS;
 		private System.Windows.Forms.DataGridView ConfigsDGV;
 		private System.Windows.Forms.BindingNavigator ConfigsBN;
-		private System.Windows.Forms.ToolStripLabel bindingNavigatorCountItem;
-		private System.Windows.Forms.ToolStripTextBox bindingNavigatorPositionItem;
 		private System.Windows.Forms.ToolStripSeparator bindingNavigatorSeparator1;
 		private System.Windows.Forms.ToolStripButton RefreshB;
 		private System.Windows.Forms.ToolStripButton SaveB;
@@ -246,6 +216,5 @@
 		private System.Windows.Forms.ToolStripButton ResetB;
 		private System.Windows.Forms.DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn valueDataGridViewTextBoxColumn;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 	}
 }

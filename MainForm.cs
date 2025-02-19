@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -42,6 +43,16 @@ namespace InformationSystem_Lab_2
 				ReAuthB.Enabled = DeAuthB.Enabled = value != Guid.Empty;
 			}
 		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct LASTINPUTINFO
+		{
+			public uint cbSize;
+			public uint dwTime;
+		}
+		[DllImport("user32.dll")]
+		static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+
 		public MainForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
@@ -55,6 +66,15 @@ namespace InformationSystem_Lab_2
 			ConfigsDialog = new ConfigsForm(fileDataSet);
 		}
 
+		private static TimeSpan? GetInactiveTime()
+		{
+			LASTINPUTINFO info = new LASTINPUTINFO();
+			info.cbSize = (uint)Marshal.SizeOf(info);
+			if (GetLastInputInfo(ref info))
+				return TimeSpan.FromMilliseconds(Environment.TickCount - info.dwTime);
+			else
+				return null;
+		}
 		private void RegistrationForm_SuccessfulRegistration(Guid uuid, string login, string password)
 		{
 			MessageBox.Show(
@@ -100,6 +120,7 @@ namespace InformationSystem_Lab_2
 					return;
 				}
 			}
+			AfkTimer.Start();
 		}
 
 		private void MainForm_Shown(object sender, EventArgs e)
@@ -119,9 +140,7 @@ namespace InformationSystem_Lab_2
 
 		private void DeAuthB_Click(object sender, EventArgs e)
 		{
-			DataSet.LogOut(UserUuid);
-			UserUuid = Guid.Empty;
-			//MessageBox.Show("Вы вышли из учётной записи!");
+			LogOut();
 		}
 
 		private void RegisterB_Click(object sender, EventArgs e)
@@ -142,6 +161,45 @@ namespace InformationSystem_Lab_2
 		private void UsersConfigB_Click(object sender, EventArgs e)
 		{
 			ConfigsDialog.BeginConfigDialog(UserUuid);
+		}
+
+		private void AfkTimer_Tick(object sender, EventArgs e)
+		{
+			var timeValue = GetInactiveTime();
+			if (timeValue == null)
+				return;
+			var afkTime = timeValue.Value;
+			string afkDelay = DataSet.GetConfig(FileDataSet.AfkDelay);
+			int timeLimit = int.Parse(afkDelay.Substring(0, afkDelay.Length - 1));
+			bool isAfk = false;
+			switch (afkDelay.Last())
+			{
+				case 'с':
+					isAfk = afkTime.TotalSeconds >= timeLimit;
+					break;
+				case 'м':
+					isAfk = afkTime.TotalMinutes >= timeLimit;
+					break;
+				case 'ч':
+					isAfk = afkTime.TotalHours >= timeLimit;
+					break;
+			}
+			if (isAfk)
+			{
+				LogOut(true);
+			}
+		}
+
+		private void LogOut(bool afk = false)
+		{
+			DataSet.LogOut(UserUuid, afk);
+			UserUuid = Guid.Empty;
+			AfkTimer.Stop();
+			if (afk)
+				MessageBox.Show("Вы были отключены из-за бездействия.");
+			else
+				MessageBox.Show("Вы вышли из учётной записи.");
+			Login();
 		}
 	}
 }
