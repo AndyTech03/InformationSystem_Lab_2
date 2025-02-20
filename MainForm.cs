@@ -17,6 +17,7 @@ namespace InformationSystem_Lab_2
 		private readonly LoginForm LoginDialog;
 		private readonly BlockForm BlockDialog;
 		private readonly ConfigsForm ConfigsDialog;
+		private readonly JournalForm JournalDialog;
 		private readonly FileDataSet DataSet;
 		private Guid _user_uuid = Guid.NewGuid(); // Чтобы первый `UserUuid = Guid.Empty;` вызвал очистку формы.
 		private Guid UserUuid
@@ -64,6 +65,7 @@ namespace InformationSystem_Lab_2
 			LoginDialog.SuccessfulLogin += LoginForm_SuccessfulLogin;
 			BlockDialog = new BlockForm(fileDataSet);
 			ConfigsDialog = new ConfigsForm(fileDataSet);
+			JournalDialog = new JournalForm(fileDataSet);
 		}
 
 		private static TimeSpan? GetInactiveTime()
@@ -165,6 +167,7 @@ namespace InformationSystem_Lab_2
 
 		private void AfkTimer_Tick(object sender, EventArgs e)
 		{
+			return;
 			var timeValue = GetInactiveTime();
 			if (timeValue == null)
 				return;
@@ -200,6 +203,26 @@ namespace InformationSystem_Lab_2
 			else
 				MessageBox.Show("Вы вышли из учётной записи.");
 			Login();
+		}
+
+		private void SearchB_Click(object sender, EventArgs e)
+		{
+			JournalDialog.BeginDialog(UserUuid);
+		}
+
+		private void ArchiveB_Click(object sender, EventArgs e)
+		{
+			JournalDialog.BeginDialog(UserUuid);
+		}
+
+		private void DearchiveB_Click(object sender, EventArgs e)
+		{
+			JournalDialog.BeginDialog(UserUuid);
+		}
+
+		private void JournalConfigB_Click(object sender, EventArgs e)
+		{
+			ConfigsDialog.BeginConfigDialog(UserUuid);
 		}
 	}
 }

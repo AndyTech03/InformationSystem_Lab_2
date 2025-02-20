@@ -204,6 +204,7 @@
 			this.JournalConfigB.TabIndex = 4;
 			this.JournalConfigB.Text = "Конфигурировать";
 			this.JournalConfigB.UseVisualStyleBackColor = true;
+			this.JournalConfigB.Click += new System.EventHandler(this.JournalConfigB_Click);
 			// 
 			// ArchiveB
 			// 
@@ -215,6 +216,7 @@
 			this.ArchiveB.TabIndex = 0;
 			this.ArchiveB.Text = "Разархивировать";
 			this.ArchiveB.UseVisualStyleBackColor = true;
+			this.ArchiveB.Click += new System.EventHandler(this.ArchiveB_Click);
 			// 
 			// SearchB
 			// 
@@ -226,6 +228,7 @@
 			this.SearchB.TabIndex = 3;
 			this.SearchB.Text = "Поиск";
 			this.SearchB.UseVisualStyleBackColor = true;
+			this.SearchB.Click += new System.EventHandler(this.SearchB_Click);
 			// 
 			// DearchiveB
 			// 
@@ -237,6 +240,7 @@
 			this.DearchiveB.TabIndex = 1;
 			this.DearchiveB.Text = "Архивировать";
 			this.DearchiveB.UseVisualStyleBackColor = true;
+			this.DearchiveB.Click += new System.EventHandler(this.DearchiveB_Click);
 			// 
 			// AfkTimer
 			// 

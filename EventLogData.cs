@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -25,7 +26,10 @@ namespace InformationSystem_Lab_2
 			UserBlocked, 
 			UserUnBlocked,
 			UserRegisrated,
+			WatcherStart,
+			WatcherStop,
 		}
+		private static Dictionary<string, EventLogType> TypesStrings = null;
 
 		public DateTime eventDateTime { get; private set; }
 		public EventLogType eventType { get; set; }
@@ -43,17 +47,35 @@ namespace InformationSystem_Lab_2
 			this.eventDetail = eventDetail;
 		}
 
+		private static void FillTypes()
+		{
+			if (TypesStrings != null) 
+				return;
+			TypesStrings = new Dictionary<string, EventLogType>();
+			for (int typeId = 0; typeId <= 15; typeId++)
+			{
+				EventLogType type = (EventLogType)typeId;
+				TypesStrings.Add(type.ToString(), type);
+			}
+		}
+
 		public IFileData FromLine(string line)
 		{
 			string[] data = line.Split('\t');
 			return new EventLogData
 			{
 				eventDateTime = DateTime.Parse(data[0]),
-				eventType = (EventLogType)int.Parse(data[1]),
+				eventType = FromString(data[1]),
 				userUuid = Guid.Parse(data[2]),
 				userIp = IPAddress.Parse(data[3]),
 				eventDetail = data[4],
 			};
+		}
+
+		public static EventLogType FromString(string typeString)
+		{
+			FillTypes();
+			return TypesStrings[typeString];
 		}
 
 		public string ToLine()

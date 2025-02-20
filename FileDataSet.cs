@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace InformationSystem_Lab_2
 {
@@ -20,9 +22,11 @@ namespace InformationSystem_Lab_2
 		private const string BLOCKS_FILE = "blocks.BlockData";
 		private const string LOGS_FILE = "logs.EventLogData";
 		private const string ADMINS_FILE = "admins.Guid";
+		private const string ARCHIVE_DIR = "archive";
 
 		public static readonly string MaxLoginAttempts = "MaxLoginAttempts";
 		public static readonly string AfkDelay = "AfkDelay";
+		public static readonly string LastArchiveDate = "LastArchiveDate";
 		private static Dictionary<string, ConfigData> DEFAULT_CONFIGS => new Dictionary<string, ConfigData>()
 		{
 			{ MaxLoginAttempts, new ConfigData(MaxLoginAttempts, "3", 
@@ -32,7 +36,9 @@ namespace InformationSystem_Lab_2
 				value => "смч".Contains(value.Last()) && 
 					int.TryParse(value.Substring(0, value.Length-1), out int data) && 
 					data > 0 && data < int.MaxValue,
-				"число больше 0 + с|м|ч") }
+				"число больше 0 + с|м|ч") },
+			{ LastArchiveDate, new ConfigData(LastArchiveDate, "Не трогать", 
+				value => false, "не трогать это значение") },
 		};
 		public static readonly Guid SYSTEM_UUID = Guid.NewGuid();
 
@@ -218,6 +224,17 @@ namespace InformationSystem_Lab_2
 				$"Пользователь был заблокирован {(adminUuid == SYSTEM_UUID ? "системой" : $"администратором (uuid: {adminUuid})")}. Причина: {reason}"));
 		}
 
+		public IEnumerable<EventLogData> GetEventsLogs(Guid adminUuid, out bool denied)
+		{
+			denied = false;
+			if (IsAdmin(adminUuid) == false)
+			{
+				denied = true;
+				return null;
+			}
+			return readFileData(LOGS_FILE, new EventLogData()).Cast<EventLogData>();
+		}
+
 		#region Get
 		public (UserData[] users, BlockData[] blockedUsers, Guid[] admins) GetBLockedUsers()
 		{
@@ -298,6 +315,15 @@ namespace InformationSystem_Lab_2
 				}
 				else
 				{
+					if (name == LastArchiveDate && adminUuid == SYSTEM_UUID)
+					{
+						createLine(CONFIGS_FILE, new ConfigData(LastArchiveDate, value, null, null));
+						createLine(LOGS_FILE, new EventLogData(
+							EventLogData.EventLogType.ConfigChanged, adminUuid, getIp(),
+							$"Конфигурации `{name}` изменена системой на значение `{value}`."));
+						result = $"Конфигурации `{name}` изменена системой на значение `{value}`.";
+						return;
+					}
 					result = $"Для конфигурации `{name}` значение `{value}` не подходит, требуется `{configData.note}`.";
 				}
 			}
@@ -399,6 +425,14 @@ namespace InformationSystem_Lab_2
 			{
 				writer.WriteLine(data.ToLine());
 			}
+			if (fileName == LOGS_FILE)
+			{
+				DateTime now = DateTime.Now;
+				if (DateTime.TryParse(GetConfig(LastArchiveDate), out DateTime lastArchiveDate) == true && 
+					now.ToString("d").Equals(lastArchiveDate.ToString("d")))
+					return;
+				GzipLogs(SYSTEM_UUID);
+			}
 		}
 
 		private IEnumerable<IFileData> readFileData(string fileName, IFileData type)
@@ -465,6 +499,52 @@ namespace InformationSystem_Lab_2
 			}
 			File.Copy(tempFile, fileName, true);
 			File.Delete(tempFile);
+		}
+
+		public string GzipLogs(Guid adminUuid)
+		{
+			if (IsAdmin(adminUuid) == false)
+				return "У вас недостаточно прав!";
+			if (Directory.Exists(ARCHIVE_DIR) == false)
+			{
+				Directory.CreateDirectory(ARCHIVE_DIR);
+			}
+			DateTime now = DateTime.Now;
+			string archivePath = $"{ARCHIVE_DIR}\\" +now.ToString("yyyy-MM-dd_HH-mm") + "_logs.EventLogData.gz";
+			if (File.Exists(archivePath))
+			{
+				return "Недавно уже проводилась архивация!";
+			}
+			using (FileStream logsFile = File.OpenRead(LOGS_FILE))
+			using (GZipStream archiveStream = new GZipStream(File.Create(archivePath), CompressionMode.Compress, false))
+			{
+				logsFile.CopyTo(archiveStream);
+			}
+			File.Create(LOGS_FILE).Close();
+			createLine(LOGS_FILE, new EventLogData(
+					EventLogData.EventLogType.LogsArchived, adminUuid, getIp(),
+					$"{(adminUuid == SYSTEM_UUID ? "Система выполнила" : $"Администратор {adminUuid} выполнил")} архивацию журнала событий."));
+
+			SetConfig(LastArchiveDate, now.ToString(), SYSTEM_UUID, out string result, out bool denied);
+			return "Архивация завершена.";
+		}
+
+		public IEnumerable<EventLogData> UnGzipLogs(Guid adminUuid, string archivePath)
+		{
+			if (IsAdmin(adminUuid) == false)
+				yield break;
+
+			string tempPath = Path.GetTempFileName();
+			using (FileStream tempFile = File.OpenWrite(tempPath))
+			using (GZipStream archiveStream = new GZipStream(File.OpenRead(archivePath), CompressionMode.Decompress, false))
+			{
+				archiveStream.CopyTo(tempFile);
+			}
+			foreach (EventLogData data in readFileData(tempPath, new EventLogData()))
+			{
+				yield return data;
+			}
+			File.Delete(tempPath);
 		}
 		#endregion
 	}
