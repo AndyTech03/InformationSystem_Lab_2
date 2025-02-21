@@ -61,6 +61,7 @@
       <DependentUpon>ConfigsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="FileDataSet.cs" />
+    <Compile Include="IDialogForm.cs" />
     <Compile Include="IFileData.cs" />
     <Compile Include="EventLogData.cs" />
     <Compile Include="JournalForm.cs">

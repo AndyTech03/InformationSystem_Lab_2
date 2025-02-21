@@ -13,6 +13,7 @@ namespace InformationSystem_Lab_2
 	public partial class LoginForm : Form
 	{
 		public event Action<Guid, string> SuccessfulLogin;
+
 		private readonly FileDataSet DataSet;
 		public LoginForm(FileDataSet fileDataSet)
 		{
@@ -66,6 +67,19 @@ namespace InformationSystem_Lab_2
 			}
 			SuccessfulLogin?.Invoke(uuid, login);
 			DialogResult = DialogResult.OK;
+			Hide();
+		}
+
+		private void LoginForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			e.Cancel = true;
+			Hide();
+			SuccessfulLogin?.Invoke(Guid.Empty, null);
+		}
+
+		private void LoginForm_Shown(object sender, EventArgs e)
+		{
+			Select();
 		}
 	}
 }

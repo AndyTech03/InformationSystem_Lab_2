@@ -10,15 +10,25 @@ using System.Windows.Forms;
 
 namespace InformationSystem_Lab_2
 {
-	public partial class PasswordGeneratorForm : Form
+	public partial class PasswordGeneratorForm : Form, IDialogForm
 	{
 		public event Action<string> GeneratedPasswordAccepted;
+		public event Action UserAction;
+
 		private int _loginLenght;
 		private Random _random;
 		public PasswordGeneratorForm()
 		{
 			InitializeComponent();
 			_random = new Random();
+
+			MouseMove += (object _, MouseEventArgs __) => UserAction?.Invoke();
+			Click += (object _, EventArgs __) => UserAction?.Invoke();
+			foreach (Control control in Controls)
+				control.Click += (object _, EventArgs __) => UserAction?.Invoke();
+			PasswordsLB.Click += (object _, EventArgs __) => UserAction?.Invoke();
+			KeyDown += (object _, KeyEventArgs __) => UserAction?.Invoke();
+			KeyPreview = true;
 		}
 
 		public DialogResult ShowGeneratePasswordDialog(string login)

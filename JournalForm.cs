@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace InformationSystem_Lab_2
 {
-	public partial class JournalForm : Form
+	public partial class JournalForm : Form, IDialogForm
 	{
 		private readonly FileDataSet DataSet;
 		private Guid _adminUuid;
@@ -29,13 +29,24 @@ namespace InformationSystem_Lab_2
 			}
 		}
 		private EventLogData[] _archiveLogs;
+
+		public event Action UserAction;
+
 		public JournalForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
+			ArchiveOpenDialog.Title = "Выберите один или несколько архивных файлов";
 			DataSet = fileDataSet;
 			_adminUuid = Guid.Empty;
 			ArchiveMode = false;
 			_archiveLogs = new EventLogData[0];
+
+			MouseMove += (object _, MouseEventArgs __) => UserAction?.Invoke();
+			Click += (object _, EventArgs __) => UserAction?.Invoke();
+			foreach (Control control in Controls)
+				control.Click += (object _, EventArgs __) => UserAction?.Invoke();
+			KeyDown += (object _, KeyEventArgs __) => UserAction?.Invoke();
+			KeyPreview = true;
 		}
 
 		public DialogResult BeginDialog(Guid adminUuid)
@@ -87,6 +98,7 @@ namespace InformationSystem_Lab_2
 			}
 			EventLogData[] logs = logsEnumerable
 				.Where(log => searchPredicate == null || searchPredicate(log))
+				.OrderByDescending(log => log.eventDateTime)
 				.ToArray();
 			int totalCount = logs.Length;
 			int count = 0;
@@ -245,10 +257,19 @@ namespace InformationSystem_Lab_2
 		{
 			if (ArchiveOpenDialog.ShowDialog() == DialogResult.OK)
 			{
-				_archiveLogs = DataSet.UnGzipLogs(_adminUuid, ArchiveOpenDialog.FileName).ToArray();
+				List<EventLogData> logs = new List<EventLogData>();
+				foreach (string fileName in ArchiveOpenDialog.FileNames)
+				{
+					logs.AddRange(DataSet.UnGzipLogs(_adminUuid, fileName));
+				}
+				_archiveLogs = logs.ToArray();
 				ArchiveMode = true;
 				UpdateData();
 				MessageBox.Show("Архив загружен");
+			}
+			else
+			{
+				MessageBox.Show("Выберите один или несколько архивных файлов!");
 			}
 		}
 
@@ -256,6 +277,20 @@ namespace InformationSystem_Lab_2
 		{
 			ArchiveMode = false;
 			UpdateData();
+		}
+
+		private void JournalForm_VisibleChanged(object sender, EventArgs e)
+		{
+		}
+
+		private void JournalDGV_Click(object sender, EventArgs e)
+		{
+			if (JournalDGV.SelectedCells.Count == 1)
+			{
+				var cell = JournalDGV.SelectedCells[0];
+				if (cell.ColumnIndex == 4)
+					MessageBox.Show(cell.Value.ToString());
+			}
 		}
 	}
 }

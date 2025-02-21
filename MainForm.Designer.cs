@@ -46,6 +46,7 @@
 			this.SearchB = new System.Windows.Forms.Button();
 			this.DearchiveB = new System.Windows.Forms.Button();
 			this.AfkTimer = new System.Windows.Forms.Timer(this.components);
+			this.AfkUpdateTimer = new System.Windows.Forms.Timer(this.components);
 			this.UserGB.SuspendLayout();
 			this.UsersGB.SuspendLayout();
 			this.JournalGB.SuspendLayout();
@@ -247,6 +248,12 @@
 			this.AfkTimer.Interval = 1000;
 			this.AfkTimer.Tick += new System.EventHandler(this.AfkTimer_Tick);
 			// 
+			// AfkUpdateTimer
+			// 
+			this.AfkUpdateTimer.Enabled = true;
+			this.AfkUpdateTimer.Interval = 1000;
+			this.AfkUpdateTimer.Tick += new System.EventHandler(this.AfkUpdateTimer_Tick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 26F);
@@ -289,5 +296,6 @@
 		private System.Windows.Forms.Button SearchB;
 		private System.Windows.Forms.Button DearchiveB;
 		private System.Windows.Forms.Timer AfkTimer;
+		private System.Windows.Forms.Timer AfkUpdateTimer;
 	}
 }

@@ -20,7 +20,8 @@ namespace InformationSystem_Lab_2
 			UserLogOut,
 			LoginFailture,
 			ConfigChanged,
-			LogsArchived,
+			LogsGziped,
+			LogsUnGziped,
 			UserDataAction,
 			UserDataChainged,
 			UserBlocked, 
@@ -52,7 +53,7 @@ namespace InformationSystem_Lab_2
 			if (TypesStrings != null) 
 				return;
 			TypesStrings = new Dictionary<string, EventLogType>();
-			for (int typeId = 0; typeId <= 15; typeId++)
+			for (int typeId = (int)EventLogType.ProgrammStart; typeId <= (int)EventLogType.WatcherStop; typeId++)
 			{
 				EventLogType type = (EventLogType)typeId;
 				TypesStrings.Add(type.ToString(), type);

@@ -10,14 +10,24 @@ using System.Windows.Forms;
 
 namespace InformationSystem_Lab_2
 {
-	public partial class BlockForm : Form
+	public partial class BlockForm : Form, IDialogForm
 	{
 		private readonly FileDataSet DataSet;
 		private Guid adminUuid;
+
+		public event Action UserAction;
+
 		public BlockForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
 			DataSet = fileDataSet;
+
+			MouseMove += (object _, MouseEventArgs __) => UserAction?.Invoke();
+			Click += (object _, EventArgs __) => UserAction?.Invoke();
+			foreach (Control control in Controls)
+				control.Click += (object _, EventArgs __) => UserAction?.Invoke();
+			KeyDown += (object _, KeyEventArgs __) => UserAction?.Invoke();
+			KeyPreview = true;
 		}
 
 		private void BlockOneB_Click(object sender, EventArgs e)

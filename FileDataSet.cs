@@ -522,7 +522,7 @@ namespace InformationSystem_Lab_2
 			}
 			File.Create(LOGS_FILE).Close();
 			createLine(LOGS_FILE, new EventLogData(
-					EventLogData.EventLogType.LogsArchived, adminUuid, getIp(),
+					EventLogData.EventLogType.LogsGziped, adminUuid, getIp(),
 					$"{(adminUuid == SYSTEM_UUID ? "Система выполнила" : $"Администратор {adminUuid} выполнил")} архивацию журнала событий."));
 
 			SetConfig(LastArchiveDate, now.ToString(), SYSTEM_UUID, out string result, out bool denied);
@@ -540,6 +540,10 @@ namespace InformationSystem_Lab_2
 			{
 				archiveStream.CopyTo(tempFile);
 			}
+			createLine(LOGS_FILE, new EventLogData(
+					EventLogData.EventLogType.LogsUnGziped, adminUuid, getIp(),
+					$"{(adminUuid == SYSTEM_UUID ? "Система выполнила" : $"Администратор {adminUuid} выполнил")} разархивирование журнала событий `{archivePath}`."));
+
 			foreach (EventLogData data in readFileData(tempPath, new EventLogData()))
 			{
 				yield return data;

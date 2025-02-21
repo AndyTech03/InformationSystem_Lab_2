@@ -10,16 +10,26 @@ using System.Windows.Forms;
 
 namespace InformationSystem_Lab_2
 {
-	public partial class ConfigsForm : Form
+	public partial class ConfigsForm : Form, IDialogForm
 	{
 		private readonly FileDataSet DataSet;
 		private Guid adminUuid;
 		private const string RESET_TEXT = "DEFAULT";
+
+		public event Action UserAction;
+
 		public ConfigsForm(FileDataSet dataSet)
 		{
 			InitializeComponent();
 			DataSet = dataSet;
 			adminUuid = Guid.Empty;
+
+			MouseMove += (object _, MouseEventArgs __) => UserAction?.Invoke();
+			Click += (object _, EventArgs __) => UserAction?.Invoke();
+			foreach (Control control in Controls)
+				control.Click += (object _, EventArgs __) => UserAction?.Invoke();
+			KeyDown += (object _, KeyEventArgs __) => UserAction?.Invoke();
+			KeyPreview = true;
 		}
 
 		private void RefreshB_Click(object sender, EventArgs e)

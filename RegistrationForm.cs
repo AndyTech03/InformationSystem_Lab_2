@@ -10,21 +10,31 @@ using System.Windows.Forms;
 
 namespace InformationSystem_Lab_2
 {
-	public partial class RegistrationForm : Form
+	public partial class RegistrationForm : Form, IDialogForm
 	{
 		public event Action<Guid, string, string> SuccessfulRegistration;
+		public event Action UserAction;
+
 		private readonly FileDataSet DataSet;
-		private readonly PasswordGeneratorForm GeneratorForm;
+		private readonly PasswordGeneratorForm PasswordGeneratorDialog;
 		private Guid adminUuid;
 
 		public RegistrationForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
 			adminUuid = Guid.Empty;
-			GeneratorForm = new PasswordGeneratorForm();
-			GeneratorForm.GeneratedPasswordAccepted += GeneratorForm_GeneratedPasswordAccepted;
+			PasswordGeneratorDialog = new PasswordGeneratorForm();
+			PasswordGeneratorDialog.GeneratedPasswordAccepted += GeneratorForm_GeneratedPasswordAccepted;
 			GeneratedPTB.ReadOnly = true;
 			DataSet = fileDataSet;
+
+			PasswordGeneratorDialog.UserAction += () => UserAction?.Invoke();
+			MouseMove += (object _, MouseEventArgs __) => UserAction?.Invoke();
+			Click += (object _, EventArgs __) => UserAction?.Invoke();
+			foreach (Control control in Controls)
+				control.Click += (object _, EventArgs __) => UserAction?.Invoke();
+			KeyDown += (object _, KeyEventArgs __) => UserAction?.Invoke();
+			KeyPreview = true;
 		}
 
 		public DialogResult BeginRegistration(Guid uuid)
@@ -58,7 +68,7 @@ namespace InformationSystem_Lab_2
 				MessageBox.Show("Введите логин!", "Заполните форму", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
-			GeneratorForm.ShowGeneratePasswordDialog(login);
+			PasswordGeneratorDialog.ShowGeneratePasswordDialog(login);
 		}
 
 		private void SubmitB_Click(object sender, EventArgs e)
@@ -113,9 +123,14 @@ namespace InformationSystem_Lab_2
 			GeneratedPTB.Password = "";
 		}
 
-		private void RegistrationForm_FormClosing(object sender, FormClosingEventArgs e)
+		private void RegistrationForm_VisibleChanged(object sender, EventArgs e)
 		{
-			adminUuid = Guid.Empty;
+			if (Visible == false)
+			{
+				adminUuid = Guid.Empty;
+				PasswordGeneratorDialog.DialogResult = DialogResult.Ignore;
+				PasswordGeneratorDialog.Hide();
+			}
 		}
 	}
 }

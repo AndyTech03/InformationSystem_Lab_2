@@ -44,16 +44,7 @@ namespace InformationSystem_Lab_2
 				ReAuthB.Enabled = DeAuthB.Enabled = value != Guid.Empty;
 			}
 		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		public struct LASTINPUTINFO
-		{
-			public uint cbSize;
-			public uint dwTime;
-		}
-		[DllImport("user32.dll")]
-		static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
-
+		private readonly IDialogForm[] Dialogs;
 		public MainForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
@@ -66,16 +57,30 @@ namespace InformationSystem_Lab_2
 			BlockDialog = new BlockForm(fileDataSet);
 			ConfigsDialog = new ConfigsForm(fileDataSet);
 			JournalDialog = new JournalForm(fileDataSet);
-		}
+			Dialogs = new IDialogForm[] {
+				RegistrationDialog,
+				BlockDialog,
+				ConfigsDialog,
+				JournalDialog,
+			};
+			foreach (IDialogForm dialog in Dialogs)
+			{
+				dialog.UserAction += OnUserAction;
+			}
 
-		private static TimeSpan? GetInactiveTime()
+			MouseMove += (object _, MouseEventArgs __) => OnUserAction();
+			Click += (object _, EventArgs __) => OnUserAction();
+			foreach (Control control in Controls)
+				control.Click += (object _, EventArgs __) => OnUserAction();
+			KeyDown += (object _, KeyEventArgs __) => OnUserAction();
+			KeyPreview = true;
+		}
+		private void CloseAllDialogs()
 		{
-			LASTINPUTINFO info = new LASTINPUTINFO();
-			info.cbSize = (uint)Marshal.SizeOf(info);
-			if (GetLastInputInfo(ref info))
-				return TimeSpan.FromMilliseconds(Environment.TickCount - info.dwTime);
-			else
-				return null;
+			foreach (IDialogForm dialog in Dialogs)
+			{
+				dialog.Hide();
+			}
 		}
 		private void RegistrationForm_SuccessfulRegistration(Guid uuid, string login, string password)
 		{
@@ -88,7 +93,13 @@ namespace InformationSystem_Lab_2
 		{
 			if (uuid == Guid.Empty)
 			{
-				Login();
+				var result = MessageBox.Show(
+					"Вы не авторизованы в системе!", "Пройдите авторизацию!",
+					MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+				if (result == DialogResult.OK)
+				{
+					Login();
+				}
 				return;
 			}
 			if (UserUuid == uuid)
@@ -109,20 +120,17 @@ namespace InformationSystem_Lab_2
 			}
 			UserUuid = uuid;
 			LoginL.Text = login;
+			SetAfkInterval();
+			AfkTimer.Start();
+			AfkUpdateTimer.Start();
+			Select();
 		}
 
 		private void Login()
 		{
-			while (LoginDialog.ShowDialog() != DialogResult.OK && UserUuid == Guid.Empty)
-			{
-				if (MessageBox.Show(
-					"Вы не авторизованы в системе!", "Пройдите авторизацию!",
-					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
-				{
-					return;
-				}
-			}
-			AfkTimer.Start();
+			AfkTimer.Stop();
+			AfkUpdateTimer.Stop();
+			LoginDialog.Show();
 		}
 
 		private void MainForm_Shown(object sender, EventArgs e)
@@ -167,30 +175,13 @@ namespace InformationSystem_Lab_2
 
 		private void AfkTimer_Tick(object sender, EventArgs e)
 		{
-			return;
-			var timeValue = GetInactiveTime();
-			if (timeValue == null)
-				return;
-			var afkTime = timeValue.Value;
-			string afkDelay = DataSet.GetConfig(FileDataSet.AfkDelay);
-			int timeLimit = int.Parse(afkDelay.Substring(0, afkDelay.Length - 1));
-			bool isAfk = false;
-			switch (afkDelay.Last())
-			{
-				case 'с':
-					isAfk = afkTime.TotalSeconds >= timeLimit;
-					break;
-				case 'м':
-					isAfk = afkTime.TotalMinutes >= timeLimit;
-					break;
-				case 'ч':
-					isAfk = afkTime.TotalHours >= timeLimit;
-					break;
-			}
-			if (isAfk)
-			{
-				LogOut(true);
-			}
+			LogOut(true);
+		}
+		private void OnUserAction()
+		{
+			AfkTimer.Stop();
+			if (UserUuid != Guid.Empty)
+				AfkTimer.Start();
 		}
 
 		private void LogOut(bool afk = false)
@@ -198,6 +189,8 @@ namespace InformationSystem_Lab_2
 			DataSet.LogOut(UserUuid, afk);
 			UserUuid = Guid.Empty;
 			AfkTimer.Stop();
+			AfkUpdateTimer.Stop();
+			CloseAllDialogs();
 			if (afk)
 				MessageBox.Show("Вы были отключены из-за бездействия.");
 			else
@@ -223,6 +216,36 @@ namespace InformationSystem_Lab_2
 		private void JournalConfigB_Click(object sender, EventArgs e)
 		{
 			ConfigsDialog.BeginConfigDialog(UserUuid);
+		}
+
+		private void AfkUpdateTimer_Tick(object sender, EventArgs e)
+		{
+			SetAfkInterval();
+		}
+
+		private void SetAfkInterval()
+		{
+			string afkDelay = DataSet.GetConfig(FileDataSet.AfkDelay);
+			int timeLimit = int.Parse(afkDelay.Substring(0, afkDelay.Length - 1));
+			int oldInterval = AfkTimer.Interval;
+			int newInterval = 1000;
+			char last = afkDelay.Last();
+			switch (last)
+			{
+				case 'с':
+					newInterval = timeLimit * 1000;
+					break;
+				case 'м':
+					newInterval = timeLimit * 1000 * 60;
+					break;
+				case 'ч':
+					newInterval = timeLimit * 1000 * 60 * 60;
+					break;
+			}
+			if (oldInterval != newInterval)
+			{
+				AfkTimer.Interval = newInterval;
+			}
 		}
 	}
 }

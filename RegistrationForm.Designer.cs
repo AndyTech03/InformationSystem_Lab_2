@@ -149,7 +149,7 @@
 			this.Name = "RegistrationForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Регистрация";
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RegistrationForm_FormClosing);
+			this.VisibleChanged += new System.EventHandler(this.RegistrationForm_VisibleChanged);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);
