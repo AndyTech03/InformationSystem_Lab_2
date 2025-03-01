@@ -27,6 +27,10 @@ namespace InformationSystem_Lab_2
 			UserBlocked, 
 			UserUnBlocked,
 			UserRegisrated,
+			DataReaded,
+			DataReadingAnauthorized,
+			DataUpdated,
+			DataUpdatingAnauthorized,
 			WatcherStart,
 			WatcherStop,
 		}

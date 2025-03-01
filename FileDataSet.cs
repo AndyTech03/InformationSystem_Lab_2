@@ -22,6 +22,7 @@ namespace InformationSystem_Lab_2
 		private const string BLOCKS_FILE = "blocks.BlockData";
 		private const string LOGS_FILE = "logs.EventLogData";
 		private const string ADMINS_FILE = "admins.Guid";
+		private const string DATA_FILE = "data.txt";
 		private const string ARCHIVE_DIR = "archive";
 
 		public static readonly string MaxLoginAttempts = "MaxLoginAttempts";
@@ -46,7 +47,7 @@ namespace InformationSystem_Lab_2
 		{
 			foreach (string file in new string[] { 
 				USERS_FILE, ATTEMPTS_FILE, CONFIGS_FILE, 
-				BLOCKS_FILE, LOGS_FILE, ADMINS_FILE
+				BLOCKS_FILE, LOGS_FILE, ADMINS_FILE, DATA_FILE
 			})
 			{
 				if (File.Exists(file) == false)
@@ -55,6 +56,47 @@ namespace InformationSystem_Lab_2
 				}
 			}
 			StartWatcher();
+		}
+
+		public string GetData(Guid userUuid)
+		{
+			string data = "";
+			if (IsUser(userUuid) == false) {
+
+				createLine(LOGS_FILE, new EventLogData(
+					EventLogData.EventLogType.DataReadingAnauthorized, userUuid, getIp(),
+					"Не авторизованный пользователь пытался прочить данные!"));
+				return data;
+			}
+			foreach (string line in readLines(DATA_FILE))
+			{
+				data += line + "\n";
+			}
+			createLine(LOGS_FILE, new EventLogData(
+				EventLogData.EventLogType.DataReaded, userUuid, getIp(),
+				"Пользователь прочитал данные."));
+			return data;
+		}
+
+		public void UpdateData(Guid userUuid, string data)
+		{
+			if (IsUser(userUuid) == false)
+			{
+				createLine(LOGS_FILE, new EventLogData(
+					EventLogData.EventLogType.DataUpdatingAnauthorized, userUuid, getIp(),
+					"Не авторизованный пользователь пытался обновить данные!"));
+				return;
+			}
+			string tempFile = Path.GetTempFileName();
+			using (var writer = new StreamWriter(tempFile))
+			{
+				writer.Write(data);
+			}
+			File.Copy(tempFile, DATA_FILE, true);
+			File.Delete(tempFile);
+			createLine(LOGS_FILE, new EventLogData(
+				EventLogData.EventLogType.DataUpdated, userUuid, getIp(),
+				" Пользователь обновил данные."));
 		}
 
 		private void StartWatcher(bool restart = false)
@@ -161,6 +203,15 @@ namespace InformationSystem_Lab_2
 				if (userUuid.Equals(line))
 					return true;
 			}
+			return false;
+		}
+
+		public bool IsUser(Guid uuid)
+		{
+			if (uuid == SYSTEM_UUID)
+				return true;
+			foreach(UserData user in selectUsersData(u => u.uuid == uuid))
+				return true;
 			return false;
 		}
 

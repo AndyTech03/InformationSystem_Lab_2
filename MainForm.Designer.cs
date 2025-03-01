@@ -47,9 +47,13 @@
 			this.DearchiveB = new System.Windows.Forms.Button();
 			this.AfkTimer = new System.Windows.Forms.Timer(this.components);
 			this.AfkUpdateTimer = new System.Windows.Forms.Timer(this.components);
+			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+			this.RefreshTSMI = new System.Windows.Forms.ToolStripMenuItem();
+			this.SaveTSMI = new System.Windows.Forms.ToolStripMenuItem();
 			this.UserGB.SuspendLayout();
 			this.UsersGB.SuspendLayout();
 			this.JournalGB.SuspendLayout();
+			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// AuthB
@@ -81,7 +85,7 @@
 			this.MainRTB.Location = new System.Drawing.Point(240, 25);
 			this.MainRTB.Margin = new System.Windows.Forms.Padding(5);
 			this.MainRTB.Name = "MainRTB";
-			this.MainRTB.Size = new System.Drawing.Size(915, 600);
+			this.MainRTB.Size = new System.Drawing.Size(915, 610);
 			this.MainRTB.TabIndex = 2;
 			this.MainRTB.Text = "";
 			// 
@@ -103,7 +107,7 @@
 			this.UserGB.Controls.Add(this.DeAuthB);
 			this.UserGB.Controls.Add(this.ReAuthB);
 			this.UserGB.Controls.Add(this.LoginL);
-			this.UserGB.Location = new System.Drawing.Point(12, 12);
+			this.UserGB.Location = new System.Drawing.Point(12, 31);
 			this.UserGB.Name = "UserGB";
 			this.UserGB.Size = new System.Drawing.Size(220, 200);
 			this.UserGB.TabIndex = 5;
@@ -127,7 +131,7 @@
 			this.UsersGB.Controls.Add(this.BlockB);
 			this.UsersGB.Controls.Add(this.RegisterB);
 			this.UsersGB.Controls.Add(this.UnblockB);
-			this.UsersGB.Location = new System.Drawing.Point(12, 220);
+			this.UsersGB.Location = new System.Drawing.Point(12, 229);
 			this.UsersGB.Name = "UsersGB";
 			this.UsersGB.Size = new System.Drawing.Size(220, 200);
 			this.UsersGB.TabIndex = 6;
@@ -188,7 +192,7 @@
 			this.JournalGB.Controls.Add(this.ArchiveB);
 			this.JournalGB.Controls.Add(this.SearchB);
 			this.JournalGB.Controls.Add(this.DearchiveB);
-			this.JournalGB.Location = new System.Drawing.Point(12, 425);
+			this.JournalGB.Location = new System.Drawing.Point(12, 435);
 			this.JournalGB.Name = "JournalGB";
 			this.JournalGB.Size = new System.Drawing.Size(220, 200);
 			this.JournalGB.TabIndex = 7;
@@ -254,6 +258,32 @@
 			this.AfkUpdateTimer.Interval = 1000;
 			this.AfkUpdateTimer.Tick += new System.EventHandler(this.AfkUpdateTimer_Tick);
 			// 
+			// menuStrip1
+			// 
+			this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RefreshTSMI,
+            this.SaveTSMI});
+			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+			this.menuStrip1.Name = "menuStrip1";
+			this.menuStrip1.Size = new System.Drawing.Size(1172, 30);
+			this.menuStrip1.TabIndex = 8;
+			this.menuStrip1.Text = "menuStrip1";
+			// 
+			// RefreshTSMI
+			// 
+			this.RefreshTSMI.Name = "RefreshTSMI";
+			this.RefreshTSMI.Size = new System.Drawing.Size(92, 26);
+			this.RefreshTSMI.Text = "Обновить";
+			this.RefreshTSMI.Click += new System.EventHandler(this.RefreshTSMI_Click);
+			// 
+			// SaveTSMI
+			// 
+			this.SaveTSMI.Name = "SaveTSMI";
+			this.SaveTSMI.Size = new System.Drawing.Size(97, 26);
+			this.SaveTSMI.Text = "Сохранить";
+			this.SaveTSMI.Click += new System.EventHandler(this.SaveTSMI_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 26F);
@@ -263,8 +293,10 @@
 			this.Controls.Add(this.UsersGB);
 			this.Controls.Add(this.UserGB);
 			this.Controls.Add(this.MainRTB);
+			this.Controls.Add(this.menuStrip1);
 			this.Font = new System.Drawing.Font("Arial", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+			this.MainMenuStrip = this.menuStrip1;
 			this.Margin = new System.Windows.Forms.Padding(5);
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -273,7 +305,10 @@
 			this.UserGB.ResumeLayout(false);
 			this.UsersGB.ResumeLayout(false);
 			this.JournalGB.ResumeLayout(false);
+			this.menuStrip1.ResumeLayout(false);
+			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -297,5 +332,8 @@
 		private System.Windows.Forms.Button DearchiveB;
 		private System.Windows.Forms.Timer AfkTimer;
 		private System.Windows.Forms.Timer AfkUpdateTimer;
+		private System.Windows.Forms.MenuStrip menuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem RefreshTSMI;
+		private System.Windows.Forms.ToolStripMenuItem SaveTSMI;
 	}
 }

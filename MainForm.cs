@@ -48,6 +48,7 @@ namespace InformationSystem_Lab_2
 		public MainForm(FileDataSet fileDataSet)
 		{
 			InitializeComponent();
+			MainRTB.Enabled = false;
 			UserUuid = Guid.Empty;
 			DataSet = fileDataSet;
 			RegistrationDialog = new RegistrationForm(fileDataSet);
@@ -91,6 +92,8 @@ namespace InformationSystem_Lab_2
 
 		private void LoginForm_SuccessfulLogin(Guid uuid, string login)
 		{
+			MainRTB.Enabled = true;
+			Select();
 			if (uuid == Guid.Empty)
 			{
 				var result = MessageBox.Show(
@@ -123,7 +126,7 @@ namespace InformationSystem_Lab_2
 			SetAfkInterval();
 			AfkTimer.Start();
 			AfkUpdateTimer.Start();
-			Select();
+			ReadData();
 		}
 
 		private void Login()
@@ -131,6 +134,7 @@ namespace InformationSystem_Lab_2
 			AfkTimer.Stop();
 			AfkUpdateTimer.Stop();
 			LoginDialog.Show();
+			LoginDialog.Select();
 		}
 
 		private void MainForm_Shown(object sender, EventArgs e)
@@ -186,6 +190,8 @@ namespace InformationSystem_Lab_2
 
 		private void LogOut(bool afk = false)
 		{
+			MainRTB.Text = "";
+			MainRTB.Enabled = false;
 			DataSet.LogOut(UserUuid, afk);
 			UserUuid = Guid.Empty;
 			AfkTimer.Stop();
@@ -246,6 +252,21 @@ namespace InformationSystem_Lab_2
 			{
 				AfkTimer.Interval = newInterval;
 			}
+		}
+
+		private void RefreshTSMI_Click(object sender, EventArgs e)
+		{
+			ReadData();
+		}
+
+		private void ReadData()
+		{
+			MainRTB.Text = DataSet.GetData(UserUuid);
+		}
+
+		private void SaveTSMI_Click(object sender, EventArgs e)
+		{
+			DataSet.UpdateData(UserUuid, MainRTB.Text);
 		}
 	}
 }
